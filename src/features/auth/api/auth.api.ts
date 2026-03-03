@@ -1,6 +1,11 @@
 import Cookies from 'js-cookie';
 import { axios } from '@/lib/axios';
-import { AuthResponse, LoginPayload } from '../types/auth.types';
+import {
+  AuthResponse,
+  LoginPayload,
+  RegisterPayload,
+  RegisterResponse,
+} from '../types/auth.types';
 
 export async function login(payload: LoginPayload): Promise<AuthResponse> {
   const { data } = await axios.post<AuthResponse>('/auth/login', payload);
@@ -20,4 +25,14 @@ export function logout() {
   if (globalThis.window !== undefined) {
     Cookies.remove('token');
   }
+}
+
+export async function register(
+  payload: RegisterPayload
+): Promise<RegisterResponse> {
+  const { data } = await axios.post<RegisterResponse>(
+    '/auth/register',
+    payload
+  );
+  return data;
 }

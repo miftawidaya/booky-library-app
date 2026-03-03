@@ -20,3 +20,16 @@ export interface AuthResponse {
     user: User;
   };
 }
+
+export interface RegisterPayload {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+}
+
+export interface RegisterResponse {
+  success: boolean;
+  message: string;
+  data: User;
+}
