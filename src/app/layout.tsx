@@ -3,6 +3,7 @@ import { Quicksand } from 'next/font/google';
 import '@/styles/globals.css';
 
 import { siteMetadata } from '@/config/site-metadata';
+import { Providers } from '@/app/providers';
 
 const quicksand = Quicksand({
   variable: '--font-quicksand',
@@ -18,7 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${quicksand.variable} antialiased`}>{children}</body>
+      <body className={`${quicksand.variable} antialiased`}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

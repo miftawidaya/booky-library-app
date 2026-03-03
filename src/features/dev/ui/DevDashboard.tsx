@@ -5,6 +5,7 @@ import { DevLayout } from './DevLayout';
 import { DesignSystem } from './DesignSystemTest';
 import { IconTest } from './IconTest';
 import { ThemeSwitcher } from './ThemeSwitcher';
+import { ApiFoundationTest } from './ApiFoundationTest';
 
 /**
  * DevDashboard Component
@@ -19,6 +20,7 @@ export function DevDashboard() {
       description='Unified view of all project design system and component benchmarks'
     >
       <div className='space-y-10xl mt-10xl'>
+        <ApiFoundationTest />
         <DesignSystem showLayout={false} />
         <IconTest showLayout={false} />
         <ThemeSwitcher position='center' />
