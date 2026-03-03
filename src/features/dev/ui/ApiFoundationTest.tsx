@@ -181,7 +181,7 @@ export function ApiFoundationTest({
               {auth.user && (
                 <div className='bg-muted/30 border-border/10 p-md flex items-center gap-4 rounded-xl border shadow-sm transition-all'>
                   <img
-                    src={auth.user.profilePhoto || ''}
+                    src={auth.user.profilePhoto || undefined}
                     className='border-border/40 size-10 rounded-full border object-cover'
                     alt=''
                   />
