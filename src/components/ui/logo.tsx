@@ -47,13 +47,13 @@ const logoVariants = cva('inline-flex items-center', {
 const iconSizeMap = {
   sm: 'size-5',
   default: 'size-7.5',
-  lg: 'size-10',
+  lg: 'size-10.5',
 } as const;
 
 const textSizeMap = {
   sm: 'text-md-bold',
   default: 'display-xs-bold',
-  lg: 'display-sm-bold',
+  lg: 'display-md-bold',
 } as const;
 
 type LogoProps = Readonly<

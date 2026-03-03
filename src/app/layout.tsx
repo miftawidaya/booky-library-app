@@ -4,7 +4,7 @@ import '@/styles/globals.css';
 
 import { siteMetadata } from '@/config/site-metadata';
 import { Providers } from '@/app/providers';
-import { Footer } from '@/components/layouts/footer';
+import { ThemeSwitcher } from '@/features/dev/ui/ThemeSwitcher';
 
 const quicksand = Quicksand({
   variable: '--font-quicksand',
@@ -23,8 +23,8 @@ export default function RootLayout({
       <body className={`${quicksand.variable} antialiased`}>
         <Providers>
           <div className='relative flex min-h-screen flex-col'>
-            <main className='flex-1'>{children}</main>
-            <Footer />
+            {children}
+            <ThemeSwitcher position='center' />
           </div>
         </Providers>
       </body>
