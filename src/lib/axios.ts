@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import Cookies from 'js-cookie';
 import { store } from '@/lib/store';
 import { clearCredentials } from '@/features/auth/store';
 
@@ -11,16 +10,6 @@ export const axios = Axios.create({
   },
 });
 
-axios.interceptors.request.use((config) => {
-  if (globalThis.window !== undefined) {
-    const token = Cookies.get('token');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  return config;
-});
-
 axios.interceptors.response.use(
   (response) => {
     return response;
@@ -28,8 +17,6 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (globalThis.window !== undefined) {
-        Cookies.remove('token');
-
         // Clear Redux state so the app doesn't think we are still logged in
         store.dispatch(clearCredentials());
 

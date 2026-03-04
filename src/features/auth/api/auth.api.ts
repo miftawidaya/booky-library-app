@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import { axios } from '@/lib/axios';
 import {
   AuthResponse,
@@ -10,20 +9,25 @@ import {
 export async function login(payload: LoginPayload): Promise<AuthResponse> {
   const { data } = await axios.post<AuthResponse>('/auth/login', payload);
   if (data.success && data.data?.token) {
+    // Sync session to server so token is available in HttpOnly cookies
     if (globalThis.window !== undefined) {
-      Cookies.set('token', data.data.token, {
-        expires: 7,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+      void fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: data.data.token,
+          user: data.data.user,
+        }),
       });
     }
   }
   return data;
 }
 
-export function logout() {
+export async function logout() {
   if (globalThis.window !== undefined) {
-    Cookies.remove('token');
+    // Remove HttpOnly cookies on server
+    await fetch('/api/auth/session', { method: 'DELETE' });
   }
 }
 

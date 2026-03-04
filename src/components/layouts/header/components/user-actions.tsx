@@ -18,6 +18,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { logout } from '@/features/auth/api/auth.api';
 import { clearCredentials } from '@/features/auth/store/auth.slice';
+import { toast } from 'sonner';
+
 const USER_MENU_ITEMS = [
   {
     label: 'Profile',
@@ -25,7 +27,7 @@ const USER_MENU_ITEMS = [
   },
   {
     label: 'Borrowed List',
-    href: '/borrowed-list',
+    href: '/borrowed',
   },
   {
     label: 'Reviews',
@@ -62,10 +64,11 @@ export function UserMenu({
 
   const handleLogout = async () => {
     try {
-      logout();
+      await logout();
       dispatch(clearCredentials());
       queryClient.clear();
-      router.push('/login');
+      router.push('/');
+      toast.success('You have been logged out successfully.');
     } catch (error) {
       console.error('Logout failed:', error);
     }
