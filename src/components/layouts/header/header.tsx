@@ -25,7 +25,7 @@ export function Header({ className }: Readonly<{ className?: string }>) {
   return (
     <header
       className={cn(
-        'bg-background border-border sticky top-0 z-30 w-full border-b',
+        'bg-background shadow-card dark:border-border sticky top-0 z-30 w-full dark:border-b dark:shadow-none',
         'h-16 md:h-20',
         className
       )}

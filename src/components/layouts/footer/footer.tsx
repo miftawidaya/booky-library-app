@@ -7,7 +7,7 @@ import { socialMediaData } from './social-media-data';
 
 export function Footer() {
   return (
-    <footer className='border-border/50 bg-background flex w-full flex-col py-10 md:py-20'>
+    <footer className='border-border bg-background flex w-full flex-col border-t py-10 md:py-20'>
       <div className='custom-container flex flex-col items-center justify-center gap-4 md:gap-10'>
         {/* Branding & Description */}
         <div className='flex w-full flex-col items-center gap-4 md:gap-6'>

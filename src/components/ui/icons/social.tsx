@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export function FacebookIcon(props: React.ComponentProps<'svg'>) {
+export function FacebookIcon(props: Readonly<React.ComponentProps<'svg'>>) {
   return (
     <svg
       width='12'
@@ -18,7 +18,7 @@ export function FacebookIcon(props: React.ComponentProps<'svg'>) {
   );
 }
 
-export function InstagramIcon(props: React.ComponentProps<'svg'>) {
+export function InstagramIcon(props: Readonly<React.ComponentProps<'svg'>>) {
   return (
     <svg
       width='21'
@@ -36,7 +36,7 @@ export function InstagramIcon(props: React.ComponentProps<'svg'>) {
   );
 }
 
-export function LinkedinIcon(props: React.ComponentProps<'svg'>) {
+export function LinkedinIcon(props: Readonly<React.ComponentProps<'svg'>>) {
   return (
     <svg
       width='18'
@@ -54,7 +54,7 @@ export function LinkedinIcon(props: React.ComponentProps<'svg'>) {
   );
 }
 
-export function TiktokIcon(props: React.ComponentProps<'svg'>) {
+export function TiktokIcon(props: Readonly<React.ComponentProps<'svg'>>) {
   return (
     <svg
       width='18'
