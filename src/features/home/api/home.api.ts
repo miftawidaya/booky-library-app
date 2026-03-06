@@ -1,6 +1,5 @@
 import { Category, Book, PopularAuthor } from '../types/home.types';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+import { API_URL } from '@/config/env';
 
 export const getCategories = async (): Promise<Category[]> => {
   const res = await fetch(`${API_URL}/categories`, {

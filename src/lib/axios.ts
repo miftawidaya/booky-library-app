@@ -2,8 +2,10 @@ import Axios from 'axios';
 import { store } from '@/lib/store';
 import { clearCredentials } from '@/features/auth/store';
 
+import { API_URL } from '@/config/env';
+
 export const axios = Axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
+  baseURL: API_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

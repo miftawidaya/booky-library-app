@@ -1,14 +1,31 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 
-// Import feature slices (feature-first)
+const createNoopStorage = () => {
+  return {
+    getItem(_key: string) {
+      return Promise.resolve(null);
+    },
+    setItem(_key: string, value: any) {
+      return Promise.resolve(value);
+    },
+    removeItem(_key: string) {
+      return Promise.resolve();
+    },
+  };
+};
+
+const storage =
+  globalThis.window === undefined
+    ? createNoopStorage()
+    : createWebStorage('local');
 import { authSlice } from '@/features/auth/store';
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth'], // Only persist auth for now
+  whitelist: ['auth'],
 };
 
 const rootReducer = combineReducers({
