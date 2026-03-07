@@ -1,3 +1,5 @@
+import { Review } from '@/features/reviews/types/reviews.types';
+
 export interface Category {
   id: number;
   name: string;
@@ -30,6 +32,7 @@ export interface Book {
     id: number;
     name: string;
   };
+  reviews?: Review[];
 }
 
 export interface PopularAuthor {

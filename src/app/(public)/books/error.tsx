@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 export default function BooksError({
   error,
   reset,
-}: {
+}: Readonly<{
   error: Error & { digest?: string };
   reset: () => void;
-}) {
+}>) {
   useEffect(() => {
     // Log the error to an error reporting service
     console.error(error);
@@ -20,7 +20,7 @@ export default function BooksError({
       <h2 className='text-display-xs text-foreground font-bold'>
         Something went wrong!
       </h2>
-      <p className='text-muted-foreground max-w-md'>
+      <p className='text-muted-foreground'>
         {error.message ||
           'We encountered an error while trying to fetch the books. Please click reload to try again.'}
       </p>

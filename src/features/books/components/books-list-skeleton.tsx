@@ -3,9 +3,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 export function BooksListSkeleton() {
   return (
     <div className='grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6'>
-      {Array.from({ length: 10 }).map((_, i) => (
+      {[1, 2, 3, 4, 5, 6, 7, 8].map((id) => (
         <div
-          key={i}
+          key={id}
           className='bg-card shadow-card flex flex-col overflow-hidden rounded-xl border border-transparent dark:shadow-none'
         >
           <Skeleton className='aspect-2/3 w-full rounded-b-none' />

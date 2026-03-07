@@ -52,3 +52,20 @@ export const getBooks = async (
     throw new Error('Failed to load books. Please try again later.');
   }
 };
+
+export const getBookById = async (
+  id: string
+): Promise<import('@/features/home/types/home.types').Book> => {
+  try {
+    const res = await fetch(`${API_URL}/books/${id}`, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch book details');
+    const json = await res.json();
+    return json.data.book || json.data || json;
+  } catch (error) {
+    console.error(`Failed to fetch book ${id}`, error);
+    throw new Error('Failed to load book details.');
+  }
+};
