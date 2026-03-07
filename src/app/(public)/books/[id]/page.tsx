@@ -4,8 +4,8 @@ import { notFound } from 'next/navigation';
 import { Icon } from '@iconify/react';
 import { getBookById, getBooks } from '@/features/books/api/books.api';
 import { ReviewList } from '@/features/reviews/components/review-list';
-import { Button } from '@/components/ui/button';
 import { BookCard } from '@/components/shared/book-card';
+import { BookActionButtons } from '@/features/cart/components/book-action-buttons';
 import { Book } from '@/features/home/types/home.types';
 
 export default async function BookDetailPage({
@@ -154,23 +154,17 @@ export default async function BookDetailPage({
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className='mt-8 hidden items-center gap-4 md:flex'>
-            <Button
-              variant='outline'
-              size='lg'
-              className='h-12 w-40 rounded-full font-bold'
-            >
-              Add to Cart
-            </Button>
-            <Button
-              size='lg'
-              className='h-12 w-40 rounded-full font-bold'
-              disabled={(book.availableCopies || 0) <= 0}
-            >
-              Borrow Book
-            </Button>
-          </div>
+          {/* Action Buttons (Client Component) */}
+          <BookActionButtons
+            bookId={book.id}
+            title={book.title}
+            authorName={
+              book.author?.name || book.authorName || 'Unknown Author'
+            }
+            categoryName={book.category?.name || 'General'}
+            coverImage={book.coverImage}
+            availableCopies={book.availableCopies || 0}
+          />
         </div>
       </div>
 
@@ -232,24 +226,6 @@ export default async function BookDetailPage({
           </section>
         </>
       )}
-
-      {/* Mobile Floating Action Bottom Bar */}
-      <div className='bg-background shadow-card fixed inset-x-0 bottom-0 z-50 flex h-18 items-center justify-center border-t md:hidden'>
-        <div className='flex w-full items-center gap-3 px-4'>
-          <Button
-            variant='outline'
-            className='border-border text-foreground h-10 grow rounded-full text-sm font-bold'
-          >
-            Add to Cart
-          </Button>
-          <Button
-            className='bg-primary text-primary-foreground h-10 grow rounded-full text-sm font-bold'
-            disabled={(book.availableCopies || 0) <= 0}
-          >
-            Borrow Book
-          </Button>
-        </div>
-      </div>
     </div>
   );
 }

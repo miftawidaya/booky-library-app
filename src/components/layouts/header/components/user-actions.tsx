@@ -5,7 +5,8 @@ import { XClose } from '@untitledui/icons';
 import { Icon } from '@iconify/react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartCount } from '@/features/cart/store';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -59,8 +60,7 @@ export function UserMenu({
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
 
-  // Temporary pseudo-state until cart system is implemented
-  const notificationsCount = 1;
+  const cartCount = useSelector(selectCartCount);
 
   const handleLogout = async () => {
     try {
@@ -76,24 +76,24 @@ export function UserMenu({
 
   return (
     <div className='flex items-center gap-4 md:gap-5'>
-      <button
-        type='button'
-        className='focus-visible:ring-ring relative flex size-10 cursor-pointer items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
-        aria-label='Cart or Notifications'
+      <Link
+        href='/cart'
+        className='focus-visible:ring-ring relative flex size-10 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
+        aria-label='Cart'
       >
         <Icon
           icon='lets-icons:bag-fill'
           className='text-foreground hover:text-foreground/80 size-5.75 shrink-0 md:size-6.5'
         />
-        {notificationsCount > 0 && (
+        {cartCount > 0 && (
           <Badge
             variant='destructive'
             className='absolute top-1.5 right-1 flex size-5 translate-x-1 -translate-y-1 items-center justify-center rounded-full p-0 text-[10px] font-bold'
           >
-            {notificationsCount}
+            {cartCount}
           </Badge>
         )}
-      </button>
+      </Link>
 
       <DropdownMenu>
         <DropdownMenuTrigger className='focus-visible:ring-ring group flex cursor-pointer items-center gap-3 rounded-full transition-all hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none data-[state=open]:opacity-80'>

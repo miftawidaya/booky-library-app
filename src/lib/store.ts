@@ -21,15 +21,17 @@ const storage =
     ? createNoopStorage()
     : createWebStorage('local');
 import { authSlice } from '@/features/auth/store';
+import { cartSlice } from '@/features/cart/store';
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth'],
+  whitelist: ['auth', 'cart'],
 };
 
 const rootReducer = combineReducers({
   auth: authSlice.reducer,
+  cart: cartSlice.reducer,
 });
 
 export const store = configureStore({
