@@ -1,8 +1,13 @@
 'use client';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@/components/ui/button';
-import { addToCart } from '@/features/cart/store';
+import {
+  addToCart,
+  removeFromCart,
+  selectCartItems,
+} from '@/features/cart/store';
+import { addToCartApi } from '@/features/cart/api/cart.api';
 import { toast } from 'sonner';
 
 interface BookActionButtonsProps {
@@ -14,10 +19,6 @@ interface BookActionButtonsProps {
   readonly availableCopies: number;
 }
 
-/**
- * Client component for "Add to Cart" and "Borrow Book" buttons
- * on the book detail page. Handles dispatching Redux actions.
- */
 export function BookActionButtons({
   bookId,
   title,
@@ -27,8 +28,16 @@ export function BookActionButtons({
   availableCopies,
 }: BookActionButtonsProps) {
   const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
+  const isInCart = cartItems.some((item) => item.bookId === Number(bookId));
 
   const handleAddToCart = () => {
+    if (isInCart) {
+      toast.info(`"${title}" is already in your cart`);
+      return;
+    }
+
+    // Optimistic: add to Redux immediately
     dispatch(
       addToCart({
         bookId,
@@ -39,6 +48,15 @@ export function BookActionButtons({
       })
     );
     toast.success(`"${title}" added to cart`);
+
+    // Sync to server in background (fire-and-forget with rollback)
+    addToCartApi(Number(bookId)).catch((error: unknown) => {
+      // Rollback on server failure
+      dispatch(removeFromCart(Number(bookId)));
+      const msg =
+        error instanceof Error ? error.message : 'Failed to sync cart';
+      toast.error(msg);
+    });
   };
 
   return (

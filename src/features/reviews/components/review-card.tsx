@@ -1,24 +1,38 @@
+'use client';
+
 import { Icon } from '@iconify/react';
 import dayjs from 'dayjs';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Review } from '../types/reviews.types';
+import type { Review } from '../types/reviews.types';
+
+interface ReviewCardProps {
+  readonly review: Review;
+  readonly className?: string;
+  readonly currentUserId?: number | string | null;
+  readonly onDelete?: (reviewId: number) => void;
+  readonly isDeleting?: boolean;
+}
 
 export function ReviewCard({
   review,
   className,
-}: Readonly<{
-  review: Review;
-  className?: string;
-}>) {
+  currentUserId,
+  onDelete,
+  isDeleting,
+}: ReviewCardProps) {
+  const isOwnReview =
+    currentUserId != null && String(review.userId) === String(currentUserId);
+
   return (
     <div
       className={cn(
         'shadow-card dark:border-border bg-background flex flex-col gap-4 rounded-2xl p-4 transition-all duration-300 dark:border dark:shadow-none',
+        isDeleting && 'pointer-events-none opacity-50',
         className
       )}
     >
-      {/* Header: Avatar + Info */}
+      {/* Header: Avatar + Info + Delete */}
       <div className='flex items-start justify-between gap-3'>
         <div className='flex items-center gap-3 md:items-start'>
           {/* Avatar */}
@@ -51,6 +65,19 @@ export function ReviewCard({
             </span>
           </div>
         </div>
+
+        {/* Delete Button */}
+        {isOwnReview && onDelete && (
+          <button
+            type='button'
+            onClick={() => onDelete(review.id)}
+            disabled={isDeleting}
+            className='text-muted-foreground hover:text-destructive focus-visible:ring-ring rounded-full p-1 transition-colors focus-visible:ring-2 focus-visible:outline-none'
+            aria-label='Delete review'
+          >
+            <Icon icon='ri:delete-bin-6-line' className='size-4.5' />
+          </button>
+        )}
       </div>
 
       {/* Content: Rating + Comment */}
@@ -59,7 +86,7 @@ export function ReviewCard({
         <div className='flex gap-0.5'>
           {[1, 2, 3, 4, 5].map((starIdx) => (
             <Icon
-              key={starIdx}
+              key={`review-star-${review.id}-${starIdx}`}
               icon='ri:star-fill'
               className={cn(
                 'size-4.5',
@@ -74,7 +101,7 @@ export function ReviewCard({
 
         {/* Comment */}
         <p className='md:text-md text-foreground text-sm font-normal tracking-tight'>
-          {review.comment || 'No comment provided.'}
+          {review.comment ?? 'No comment provided.'}
         </p>
       </div>
     </div>
@@ -95,7 +122,7 @@ export function ReviewCardSkeleton() {
         <div className='flex gap-1'>
           {[1, 2, 3, 4, 5].map((i) => (
             <div
-              key={i}
+              key={`skel-star-${i}`}
               className='bg-secondary size-4 animate-pulse rounded'
             />
           ))}

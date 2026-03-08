@@ -5,4 +5,5 @@ export interface CartItem {
   readonly categoryName: string;
   readonly coverImage: string | null;
   readonly selected: boolean;
+  readonly serverItemId?: number;
 }

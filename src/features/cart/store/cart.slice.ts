@@ -14,11 +14,10 @@ export const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart(state, action: PayloadAction<Omit<CartItem, 'selected'>>) {
-      const exists = state.items.some(
-        (item) => item.bookId === action.payload.bookId
-      );
+      const bookId = Number(action.payload.bookId);
+      const exists = state.items.some((item) => item.bookId === bookId);
       if (exists === false) {
-        state.items.push({ ...action.payload, selected: false });
+        state.items.push({ ...action.payload, bookId, selected: false });
       }
     },
 
@@ -49,6 +48,17 @@ export const cartSlice = createSlice({
     clearCart(state) {
       state.items = [];
     },
+
+    setCartFromServer(state, action: PayloadAction<CartItem[]>) {
+      // Merge server cart with local selections
+      const localSelections = new Map(
+        state.items.map((item) => [item.bookId, item.selected])
+      );
+      state.items = action.payload.map((item) => ({
+        ...item,
+        selected: localSelections.get(item.bookId) ?? false,
+      }));
+    },
   },
   selectors: {
     selectCartItems: (state) => state.items,
@@ -68,6 +78,7 @@ export const {
   toggleSelectAll,
   removeSelectedItems,
   clearCart,
+  setCartFromServer,
 } = cartSlice.actions;
 
 export const {

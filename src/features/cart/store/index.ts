@@ -6,6 +6,7 @@ export {
   toggleSelectAll,
   removeSelectedItems,
   clearCart,
+  setCartFromServer,
   selectCartItems,
   selectCartCount,
   selectSelectedItems,
