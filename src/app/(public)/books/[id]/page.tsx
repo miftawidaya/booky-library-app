@@ -118,10 +118,10 @@ export default async function BookDetailPage({
           <div className='my-6 flex items-center gap-5 md:my-8'>
             <div className='flex grow flex-col md:w-25.5 md:grow-0'>
               <span className='md:text-display-xs text-foreground text-lg font-bold tracking-[-0.03em] md:tracking-normal'>
-                {book.publishedYear || 320}
+                {book.availableCopies || 0}
               </span>
               <span className='md:text-md text-foreground text-sm font-medium tracking-[-0.03em]'>
-                Page
+                Available
               </span>
             </div>
             <div className='bg-border h-15 w-px md:h-16.5' />

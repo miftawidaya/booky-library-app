@@ -95,12 +95,13 @@ export function BookActionButtons({
       {/* Desktop Buttons */}
       <div className='mt-8 hidden items-center gap-4 md:flex'>
         <Button
-          variant='outline'
+          variant={isInCart ? 'default' : 'outline'}
           size='lg'
-          className='h-12 w-40 rounded-full font-bold'
-          onClick={handleAddToCart}
+          className={`h-12 w-40 rounded-full font-bold ${isInCart ? 'bg-primary/10 text-primary hover:bg-primary/20' : ''}`}
+          onClick={isInCart ? () => router.push('/cart') : handleAddToCart}
+          disabled={!isInCart && availableCopies <= 0}
         >
-          Add to Cart
+          {isInCart ? 'Go to Cart' : 'Add to Cart'}
         </Button>
         <Button
           size='lg'
@@ -116,11 +117,12 @@ export function BookActionButtons({
       <div className='bg-background shadow-card fixed inset-x-0 bottom-0 z-50 flex h-18 items-center justify-center border-t md:hidden'>
         <div className='flex w-full items-center gap-3 px-4'>
           <Button
-            variant='outline'
-            className='border-border text-foreground h-10 grow rounded-full text-sm font-bold'
-            onClick={handleAddToCart}
+            variant={isInCart ? 'default' : 'outline'}
+            className={`border-border h-10 grow rounded-full text-sm font-bold ${isInCart ? 'bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary' : 'text-foreground'}`}
+            onClick={isInCart ? () => router.push('/cart') : handleAddToCart}
+            disabled={!isInCart && availableCopies <= 0}
           >
-            Add to Cart
+            {isInCart ? 'Go to Cart' : 'Add to Cart'}
           </Button>
           <Button
             className='bg-primary text-primary-foreground h-10 grow rounded-full text-sm font-bold'
