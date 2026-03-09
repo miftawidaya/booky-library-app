@@ -1,5 +1,9 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { getBookReviews, type PaginatedReviews } from './reviews.api';
+import {
+  getBookReviews,
+  getMyReviews,
+  type PaginatedReviews,
+} from './reviews.api';
 import type { Review } from '../types/reviews.types';
 
 export function useInfiniteReviews(
@@ -36,5 +40,21 @@ export function useInfiniteReviews(
           pageParams: [1],
         }
       : undefined,
+  });
+}
+
+export function useInfiniteMyReviews() {
+  return useInfiniteQuery({
+    queryKey: ['my-reviews'],
+    queryFn: async ({ pageParam = 1 }): Promise<PaginatedReviews> => {
+      return getMyReviews(pageParam, 10);
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.reviews.length < 10) {
+        return undefined;
+      }
+      return lastPage.pagination.page + 1;
+    },
   });
 }

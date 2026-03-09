@@ -7,10 +7,27 @@ export interface Review {
   comment: string | null;
   createdAt: string;
   updatedAt: string;
-  user: {
+  user?: {
     id: string;
     name: string;
     photo?: string | null;
+  };
+  book?: {
+    id: number;
+    title: string;
+    description?: string | null;
+    isbn?: string;
+    publishedYear?: number | null;
+    coverImage?: string | null;
+    rating?: number;
+    author?: {
+      id: number;
+      name: string;
+    };
+    category?: {
+      id: number;
+      name: string;
+    };
   };
 }
 

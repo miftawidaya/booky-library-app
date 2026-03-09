@@ -42,3 +42,31 @@ export const getBookReviews = async (
     },
   };
 };
+
+export const getMyReviews = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<PaginatedReviews> => {
+  const res = await fetch(`/api/me/reviews?page=${page}&limit=${limit}`, {
+    method: 'GET',
+    headers: {
+      accept: '*/*',
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch user reviews');
+  }
+
+  const json = await res.json();
+
+  return {
+    reviews: json.data?.items || [],
+    pagination: json.data?.pagination || {
+      total: 0,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+    },
+  };
+};
