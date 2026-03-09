@@ -2,11 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
-import { useState } from 'react';
-import {
-  selectSelectedItems,
-  removeSelectedItems,
-} from '@/features/cart/store';
+import { useState, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { selectSelectedIds, clearCartSelections } from '@/features/cart/store';
+import { useCart } from '@/features/cart/api/cart.queries';
 import { CheckoutUserInfo } from '@/features/checkout/components/checkout-user-info';
 import { CheckoutBookList } from '@/features/checkout/components/checkout-book-list';
 import { CheckoutBorrowForm } from '@/features/checkout/components/checkout-borrow-form';
@@ -17,9 +16,18 @@ import { toast } from 'sonner';
 export default function CheckoutPage() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const selectedItems = useSelector(selectSelectedItems);
+  // TanStack Query handles the actual data
+  const { data: cartItems = [] } = useCart();
+
+  // Redux only dictates WHICH of those items are checked out
+  const selectedIds = useSelector(selectSelectedIds) ?? [];
+  const selectedItems = useMemo(() => {
+    return cartItems.filter((i) => selectedIds.includes(i.bookId));
+  }, [cartItems, selectedIds]);
+
   const user = useSelector((state: RootState) => state.auth.user);
 
   // Redirect if no items selected
@@ -78,8 +86,11 @@ export default function CheckoutPage() {
           new Date(borrowDate).getTime() + duration * 24 * 60 * 60 * 1000
         ).toISOString();
 
-      // Remove borrowed items from cart
-      dispatch(removeSelectedItems());
+      // Remove borrowed items purely by clearing Redux selected state
+      dispatch(clearCartSelections());
+
+      // Invalidate the cart query so next time they visit cart it fetches fresh state without borrowed items
+      void queryClient.invalidateQueries({ queryKey: ['cart'] });
 
       const successParams = new URLSearchParams();
       if (loanId) successParams.set('loanId', String(loanId));

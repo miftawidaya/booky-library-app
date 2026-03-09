@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { XClose } from '@untitledui/icons';
 import { Icon } from '@iconify/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectCartCount } from '@/features/cart/store';
+import { useDispatch } from 'react-redux';
+import { useCart } from '@/features/cart/api/cart.queries';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -20,6 +20,8 @@ import { Button } from '@/components/ui/button';
 import { logout } from '@/features/auth/api/auth.api';
 import { clearCredentials } from '@/features/auth/store/auth.slice';
 import { toast } from 'sonner';
+
+import { publicRoutes } from '@/proxy';
 
 const USER_MENU_ITEMS = [
   {
@@ -56,18 +58,30 @@ export function UserMenu({
   name: string;
   avatarUrl?: string;
 }>) {
+  const pathname = usePathname();
   const router = useRouter();
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
 
-  const cartCount = useSelector(selectCartCount);
+  const { data: cartItems } = useCart();
+  const cartCount = cartItems?.length ?? 0;
 
   const handleLogout = async () => {
     try {
       await logout();
       dispatch(clearCredentials());
       queryClient.clear();
-      router.push('/');
+
+      const isPublicRoute = publicRoutes.some(
+        (route) => pathname === route || pathname.startsWith(route + '/')
+      );
+
+      if (isPublicRoute) {
+        router.refresh();
+      } else {
+        router.push(`/login?callbackUrl=${encodeURIComponent(pathname)}`);
+      }
+
       toast.success('You have been logged out successfully.');
     } catch (error) {
       console.error('Logout failed:', error);

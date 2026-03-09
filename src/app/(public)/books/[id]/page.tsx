@@ -158,11 +158,6 @@ export default async function BookDetailPage({
           <BookActionButtons
             bookId={book.id}
             title={book.title}
-            authorName={
-              book.author?.name || book.authorName || 'Unknown Author'
-            }
-            categoryName={book.category?.name || 'General'}
-            coverImage={book.coverImage}
             availableCopies={book.availableCopies || 0}
           />
         </div>

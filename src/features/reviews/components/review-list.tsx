@@ -6,7 +6,7 @@ import { ReviewCard } from '@/features/reviews/components/review-card';
 import { ReviewForm } from '@/features/reviews/components/review-form';
 import { Button } from '@/components/ui/button';
 import type { Review } from '@/features/reviews/types/reviews.types';
-import { getBookReviews } from '@/features/reviews/api/reviews.api';
+import { useInfiniteReviews } from '@/features/reviews/api/reviews.queries';
 import { useDeleteReview } from '@/features/reviews/api/reviews.mutations';
 import { Icon } from '@iconify/react';
 import { toast } from 'sonner';
@@ -23,76 +23,34 @@ export function ReviewList({
   initialReviews,
   totalReviews,
 }: Readonly<ReviewListProps>) {
-  const [reviews, setReviews] = useState<Review[]>(initialReviews.slice(0, 6));
-  const [total, setTotal] = useState(totalReviews);
-  const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const user = useSelector((state: RootState) => state.auth.user);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  const user = useSelector((state: RootState) => state.auth.user);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteReviews(bookId, initialReviews, totalReviews);
 
   const deleteReview = useDeleteReview({
     onSuccess: () => {
       toast.success('Review deleted');
+      setDeletingId(null);
     },
     onError: (error: Error) => {
-      // Rollback: re-add the review if delete failed
       toast.error(error.message);
-      // Force page refresh to restore state
-      globalThis.location.reload();
+      setDeletingId(null);
     },
   });
 
-  const hasMore = reviews.length < total;
-
-  const handleLoadMore = async () => {
-    if (isLoading || !hasMore) return;
-
-    setIsLoading(true);
-    try {
-      const nextPage = page + 1;
-      const data = await getBookReviews(bookId, nextPage, 6);
-
-      setReviews((prev) => [...prev, ...data.reviews]);
-      setPage(nextPage);
-    } catch (error) {
-      console.error('Failed to load more reviews:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleReviewCreated = (review: Review) => {
-    // Optimistic: deduplicate (endpoint is create-or-update) then prepend
-    setReviews((prev) => {
-      const filtered = prev.filter((r) => r.id !== review.id);
-      return [review, ...filtered];
-    });
-    setTotal((prev) => {
-      // Only increment if this is truly a new review (not an update)
-      const existed = reviews.some((r) => r.id === review.id);
-      return existed ? prev : prev + 1;
-    });
-  };
-
   const handleDeleteReview = (reviewId: number) => {
-    // Optimistic: remove review from list immediately
     setDeletingId(reviewId);
-    setReviews((prev) => prev.filter((r) => r.id !== reviewId));
-    setTotal((prev) => prev - 1);
-    setDeletingId(null);
-
-    // Fire mutation
     deleteReview.mutate(reviewId);
   };
+
+  const reviews = data?.pages.flatMap((page) => page.reviews) ?? [];
 
   return (
     <div className='flex flex-col gap-6 md:gap-8'>
       {/* Review Form */}
-      <ReviewForm
-        bookId={Number(bookId)}
-        onReviewCreated={handleReviewCreated}
-      />
+      <ReviewForm bookId={Number(bookId)} />
 
       {/* Review Grid */}
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6'>
@@ -107,15 +65,15 @@ export function ReviewList({
         ))}
       </div>
 
-      {hasMore && (
+      {hasNextPage && (
         <div className='mt-2 flex justify-center'>
           <Button
             variant='outline'
             className='h-11 w-full rounded-full font-bold md:w-auto md:min-w-50'
-            onClick={handleLoadMore}
-            disabled={isLoading}
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
           >
-            {isLoading ? (
+            {isFetchingNextPage ? (
               <Icon icon='ri:loader-4-line' className='size-5 animate-spin' />
             ) : (
               'Load More'

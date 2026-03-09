@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 /**
  * Public routes accessible without authentication.
  */
-const publicRoutes = [
+export const publicRoutes = [
   '/',
   '/login',
   '/register',

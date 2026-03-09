@@ -1,6 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Calendar } from '@untitledui/icons';
 import dayjs from 'dayjs';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,6 +12,21 @@ import { cn } from '@/lib/utils';
 import type { BorrowDuration } from '../types/checkout.types';
 
 const DURATION_OPTIONS: readonly BorrowDuration[] = [3, 5, 10];
+
+const today = dayjs().format('YYYY-MM-DD');
+
+const checkoutSchema = z.object({
+  borrowDate: z.string().min(1, 'Borrow date is required'),
+  duration: z.union([z.literal(3), z.literal(5), z.literal(10)]),
+  agreeReturn: z.boolean().refine((val) => val === true, {
+    message: 'You must agree to return the book before the due date.',
+  }),
+  agreePolicy: z.boolean().refine((val) => val === true, {
+    message: 'You must accept the library borrowing policy.',
+  }),
+});
+
+type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 interface CheckoutBorrowFormProps {
   readonly isSubmitting: boolean;
@@ -19,32 +37,48 @@ export function CheckoutBorrowForm({
   isSubmitting,
   onSubmit,
 }: CheckoutBorrowFormProps) {
-  const today = dayjs().format('YYYY-MM-DD');
-  const [borrowDate, setBorrowDate] = useState(today);
-  const [duration, setDuration] = useState<BorrowDuration>(3);
-  const [agreeReturn, setAgreeReturn] = useState(false);
-  const [agreePolicy, setAgreePolicy] = useState(false);
+  const form = useForm<CheckoutFormValues>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      borrowDate: today,
+      duration: 3,
+      agreeReturn: false,
+      agreePolicy: false,
+    },
+    mode: 'onChange', // Validate on change so the submit button enables immediately
+  });
+
+  const {
+    watch,
+    control,
+    handleSubmit,
+    register,
+    formState: { isValid, errors },
+  } = form;
+
+  const watchBorrowDate = watch('borrowDate');
+  const watchDuration = watch('duration');
 
   const returnDate = useMemo(
-    () => dayjs(borrowDate).add(duration, 'day').format('D MMMM YYYY'),
-    [borrowDate, duration]
+    () =>
+      dayjs(watchBorrowDate).add(watchDuration, 'day').format('D MMMM YYYY'),
+    [watchBorrowDate, watchDuration]
   );
 
   const displayBorrowDate = useMemo(
-    () => dayjs(borrowDate).format('D MMM YYYY'),
-    [borrowDate]
+    () => dayjs(watchBorrowDate).format('D MMM YYYY'),
+    [watchBorrowDate]
   );
 
-  const isFormValid = agreeReturn && agreePolicy && borrowDate.length > 0;
-
-  const handleSubmit = () => {
-    if (isFormValid) {
-      onSubmit(borrowDate, duration);
-    }
+  const submitForm = (data: CheckoutFormValues) => {
+    onSubmit(data.borrowDate, data.duration);
   };
 
   return (
-    <div className='bg-background shadow-card flex flex-col gap-4 rounded-2xl p-4 md:gap-6 md:rounded-2xl md:p-5'>
+    <form
+      onSubmit={handleSubmit(submitForm)}
+      className='bg-background shadow-card flex flex-col gap-4 rounded-2xl p-4 md:gap-6 md:rounded-2xl md:p-5'
+    >
       {/* Title */}
       <h2 className='text-foreground md:text-display-xs text-xl leading-8.5 font-bold tracking-[-0.02em] md:leading-9.5'>
         Complete Your Borrow Request
@@ -62,14 +96,14 @@ export function CheckoutBorrowForm({
           <input
             id='borrow-date'
             type='date'
-            value={borrowDate}
             min={today}
-            onChange={(e) => setBorrowDate(e.target.value)}
+            {...register('borrowDate')}
             className={cn(
               'border-border text-foreground bg-secondary w-full rounded-xl border px-4 py-2',
               'text-md leading-7.5 font-semibold tracking-[-0.02em]',
               'focus-visible:ring-ring outline-none focus-visible:ring-2',
-              '[&::-webkit-calendar-picker-indicator]:opacity-0'
+              '[&::-webkit-calendar-picker-indicator]:opacity-0',
+              errors.borrowDate && 'border-destructive'
             )}
           />
           <div className='pointer-events-none absolute inset-y-0 end-4 flex items-center'>
@@ -81,7 +115,7 @@ export function CheckoutBorrowForm({
           </div>
         </div>
         <span className='text-muted-foreground text-xs'>
-          {displayBorrowDate}
+          {watchBorrowDate ? displayBorrowDate : 'Select a date'}
         </span>
       </div>
 
@@ -90,38 +124,47 @@ export function CheckoutBorrowForm({
         <legend className='text-foreground md:text-md text-sm leading-7 font-bold tracking-[-0.02em] md:leading-7.5'>
           Borrow Duration
         </legend>
-        {DURATION_OPTIONS.map((opt) => (
-          <label
-            key={opt}
-            className='flex cursor-pointer items-center gap-2 md:gap-3.75'
-          >
-            {/* Custom Radio Circle */}
-            <span
-              className={cn(
-                'flex size-6 items-center justify-center rounded-full border-2 transition-colors',
-                duration === opt
-                  ? 'border-primary bg-primary'
-                  : 'bg-background border-input'
-              )}
-              aria-hidden='true'
-            >
-              {duration === opt && (
-                <span className='bg-background size-2.5 rounded-full' />
-              )}
-            </span>
-            <input
-              type='radio'
-              name='duration'
-              value={opt}
-              checked={duration === opt}
-              onChange={() => setDuration(opt)}
-              className='sr-only'
-            />
-            <span className='text-foreground md:text-md text-sm leading-7 font-semibold tracking-[-0.02em] md:leading-7.5'>
-              {opt} Days
-            </span>
-          </label>
-        ))}
+        <Controller
+          name='duration'
+          control={control}
+          render={({ field }) => (
+            <>
+              {DURATION_OPTIONS.map((opt) => (
+                <label
+                  key={opt}
+                  className='flex cursor-pointer items-center gap-2 md:gap-3.75'
+                >
+                  <span
+                    className={cn(
+                      'flex size-6 items-center justify-center rounded-full border-2 transition-colors',
+                      field.value === opt
+                        ? 'border-primary bg-primary'
+                        : 'bg-background border-input'
+                    )}
+                    aria-hidden='true'
+                  >
+                    {field.value === opt && (
+                      <span className='bg-background size-2.5 rounded-full' />
+                    )}
+                  </span>
+                  <input
+                    type='radio'
+                    name={field.name}
+                    value={opt}
+                    checked={field.value === opt}
+                    onChange={() => field.onChange(opt)}
+                    onBlur={field.onBlur}
+                    ref={field.ref}
+                    className='sr-only'
+                  />
+                  <span className='text-foreground md:text-md text-sm leading-7 font-semibold tracking-[-0.02em] md:leading-7.5'>
+                    {opt} Days
+                  </span>
+                </label>
+              ))}
+            </>
+          )}
+        />
       </fieldset>
 
       {/* Return Date Info Box */}
@@ -138,10 +181,16 @@ export function CheckoutBorrowForm({
       {/* Agreement Checkboxes */}
       <div className='flex flex-col gap-2'>
         <label className='flex cursor-pointer items-center gap-2 md:gap-4'>
-          <Checkbox
-            checked={agreeReturn}
-            onCheckedChange={(val) => setAgreeReturn(val === true)}
-            className='size-5 rounded-md'
+          <Controller
+            name='agreeReturn'
+            control={control}
+            render={({ field }) => (
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                className='size-5 rounded-md'
+              />
+            )}
           />
           <span className='text-foreground md:text-md text-sm leading-7 font-semibold tracking-[-0.02em] md:leading-7.5'>
             I agree to return the book(s) before the due date.
@@ -149,10 +198,16 @@ export function CheckoutBorrowForm({
         </label>
 
         <label className='flex cursor-pointer items-center gap-2 md:gap-4'>
-          <Checkbox
-            checked={agreePolicy}
-            onCheckedChange={(val) => setAgreePolicy(val === true)}
-            className='size-5 rounded-md'
+          <Controller
+            name='agreePolicy'
+            control={control}
+            render={({ field }) => (
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                className='size-5 rounded-md'
+              />
+            )}
           />
           <span className='text-foreground md:text-md text-sm leading-7 font-semibold tracking-[-0.02em] md:leading-7.5'>
             I accept the library borrowing policy.
@@ -162,13 +217,13 @@ export function CheckoutBorrowForm({
 
       {/* Submit Button */}
       <Button
+        type='submit'
         size='lg'
         className='text-md h-12 w-full rounded-full leading-7.5 font-bold tracking-[-0.02em]'
-        disabled={isFormValid === false || isSubmitting}
-        onClick={handleSubmit}
+        disabled={!isValid || isSubmitting}
       >
         {isSubmitting ? 'Processing...' : 'Confirm & Borrow'}
       </Button>
-    </div>
+    </form>
   );
 }

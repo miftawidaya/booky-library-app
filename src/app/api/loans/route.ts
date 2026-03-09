@@ -54,6 +54,19 @@ export async function POST(request: Request) {
 
     // Invalidate book pages cache so stock numbers are fresh
     if (backendResponse.ok) {
+      // The backend does not automatically remove items from the cart after loan creation,
+      // so we must send DELETE requests for each checked out item.
+      await Promise.allSettled(
+        body.itemIds.map((id) =>
+          fetch(`${API_URL}/cart/items/${id}`, {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+        )
+      );
+
       revalidatePath('/books', 'page');
       revalidatePath('/books/[id]', 'page');
       revalidatePath('/', 'page');

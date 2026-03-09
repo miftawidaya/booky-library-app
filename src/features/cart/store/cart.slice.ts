@@ -1,90 +1,71 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { CartItem } from '../types/cart.types';
+import type { RootState } from '@/lib/store';
 
 interface CartState {
-  readonly items: CartItem[];
+  readonly selectedItemIds: number[];
 }
 
 const initialState: CartState = {
-  items: [],
+  selectedItemIds: [],
 };
 
 export const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addToCart(state, action: PayloadAction<Omit<CartItem, 'selected'>>) {
-      const bookId = Number(action.payload.bookId);
-      const exists = state.items.some((item) => item.bookId === bookId);
-      if (exists === false) {
-        state.items.push({ ...action.payload, bookId, selected: false });
-      }
-    },
-
-    removeFromCart(state, action: PayloadAction<number>) {
-      state.items = state.items.filter(
-        (item) => item.bookId !== action.payload
-      );
-    },
-
     toggleSelectItem(state, action: PayloadAction<number>) {
-      const item = state.items.find((item) => item.bookId === action.payload);
-      if (item) {
-        item.selected = !item.selected;
+      const id = action.payload;
+      const currentSelections = state.selectedItemIds || [];
+      if (currentSelections.includes(id)) {
+        state.selectedItemIds = currentSelections.filter((item) => item !== id);
+      } else {
+        state.selectedItemIds = [...currentSelections, id];
       }
     },
 
-    toggleSelectAll(state) {
-      const allSelected = state.items.every((item) => item.selected);
-      state.items.forEach((item) => {
-        item.selected = !allSelected;
-      });
+    toggleSelectAll(state, action: PayloadAction<number[]>) {
+      // action.payload contains all currently visible bookIds in the cart
+      // if all visible items are already selected, clear them
+      // else, select all of them
+      const currentSelections = state.selectedItemIds || [];
+      const allSelected =
+        action.payload.length > 0 &&
+        action.payload.every((id) => currentSelections.includes(id));
+
+      if (allSelected) {
+        state.selectedItemIds = [];
+      } else {
+        // Use Set to ensure uniqueness when merging, just in case
+        state.selectedItemIds = Array.from(new Set(action.payload));
+      }
     },
 
-    removeSelectedItems(state) {
-      state.items = state.items.filter((item) => item.selected === false);
+    clearCartSelections(state) {
+      state.selectedItemIds = [];
     },
 
-    clearCart(state) {
-      state.items = [];
+    setSelections(state, action: PayloadAction<number[]>) {
+      state.selectedItemIds = action.payload;
     },
 
-    setCartFromServer(state, action: PayloadAction<CartItem[]>) {
-      // Merge server cart with local selections
-      const localSelections = new Map(
-        state.items.map((item) => [item.bookId, item.selected])
+    // Sync selections to ensure removed items are no longer selected locally
+    syncSelections(state, action: PayloadAction<number[]>) {
+      const currentIds = new Set(action.payload);
+      const currentSelections = state.selectedItemIds || [];
+      state.selectedItemIds = currentSelections.filter((id) =>
+        currentIds.has(id)
       );
-      state.items = action.payload.map((item) => ({
-        ...item,
-        selected: localSelections.get(item.bookId) ?? false,
-      }));
     },
-  },
-  selectors: {
-    selectCartItems: (state) => state.items,
-    selectCartCount: (state) => state.items.length,
-    selectSelectedItems: (state) => state.items.filter((item) => item.selected),
-    selectSelectedCount: (state) =>
-      state.items.filter((item) => item.selected).length,
-    selectIsAllSelected: (state) =>
-      state.items.length > 0 && state.items.every((item) => item.selected),
   },
 });
 
 export const {
-  addToCart,
-  removeFromCart,
   toggleSelectItem,
   toggleSelectAll,
-  removeSelectedItems,
-  clearCart,
-  setCartFromServer,
+  clearCartSelections,
+  setSelections,
+  syncSelections,
 } = cartSlice.actions;
 
-export const {
-  selectCartItems,
-  selectCartCount,
-  selectSelectedItems,
-  selectSelectedCount,
-  selectIsAllSelected,
-} = cartSlice.selectors;
+export const selectSelectedIds = (state: RootState) =>
+  state.cart?.selectedItemIds || [];

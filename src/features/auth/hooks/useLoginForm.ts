@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useAppSelector, useAppDispatch } from '@/lib/hooks-redux';
 import { selectIsAuthenticated, setCredentials } from '../store';
@@ -10,6 +10,7 @@ import { loginSchema, type LoginValues } from '../types/auth.schema';
 
 export function useLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const { mutate: login, isPending } = useLogin();
@@ -17,12 +18,14 @@ export function useLoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Redirect to home if already authenticated
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
+
+  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/');
+      router.replace(callbackUrl);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, callbackUrl]);
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -38,7 +41,7 @@ export function useLoginForm() {
       onSuccess: (data) => {
         if (data.success && data.data?.user) {
           dispatch(setCredentials(data.data.user));
-          router.push('/');
+          router.push(callbackUrl);
         } else {
           setErrorMsg(data.message || 'Login failed');
         }

@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Review } from '@/features/reviews/types/reviews.types';
 
 interface CreateReviewPayload {
@@ -59,10 +59,14 @@ export function useCreateReview(options?: {
   onSuccess?: (data: ReviewApiResponse) => void;
   onError?: (error: Error) => void;
 }) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createReviewApi,
     onSuccess: options?.onSuccess,
     onError: options?.onError,
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['reviews'] });
+    },
   });
 }
 
@@ -74,9 +78,13 @@ export function useDeleteReview(options?: {
   onSuccess?: (data: ReviewApiResponse) => void;
   onError?: (error: Error) => void;
 }) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteReviewApi,
     onSuccess: options?.onSuccess,
     onError: options?.onError,
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['reviews'] });
+    },
   });
 }

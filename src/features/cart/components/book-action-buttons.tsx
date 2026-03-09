@@ -1,63 +1,94 @@
 'use client';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useRef } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button } from '@/components/ui/button';
-import {
-  addToCart,
-  removeFromCart,
-  selectCartItems,
-} from '@/features/cart/store';
-import { addToCartApi } from '@/features/cart/api/cart.api';
+import { useCart } from '@/features/cart/api/cart.queries';
+import { useAddToCart } from '@/features/cart/api/cart.mutations';
+import { setSelections } from '@/features/cart/store';
 import { toast } from 'sonner';
+import type { RootState } from '@/lib/store';
 
 interface BookActionButtonsProps {
   readonly bookId: number;
   readonly title: string;
-  readonly authorName: string;
-  readonly categoryName: string;
-  readonly coverImage: string | null;
   readonly availableCopies: number;
 }
 
 export function BookActionButtons({
   bookId,
   title,
-  authorName,
-  categoryName,
-  coverImage,
   availableCopies,
 }: BookActionButtonsProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const dispatch = useDispatch();
-  const cartItems = useSelector(selectCartItems);
-  const isInCart = cartItems.some((item) => item.bookId === Number(bookId));
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const { data: cartItems } = useCart();
+  const addToCartMutation = useAddToCart();
+
+  const isInCart = cartItems?.some((item) => item.bookId === Number(bookId));
+  const autoProcessed = useRef(false);
 
   const handleAddToCart = () => {
+    if (!user) {
+      toast.error('Please login to add items to your cart');
+      const callback = encodeURIComponent(`${pathname}?autoAdd=true`);
+      router.push(`/login?callbackUrl=${callback}`);
+      return;
+    }
+
     if (isInCart) {
       toast.info(`"${title}" is already in your cart`);
       return;
     }
 
-    // Optimistic: add to Redux immediately
-    dispatch(
-      addToCart({
-        bookId,
-        title,
-        authorName,
-        categoryName,
-        coverImage,
-      })
-    );
-    toast.success(`"${title}" added to cart`);
-
-    // Sync to server in background (fire-and-forget with rollback)
-    addToCartApi(Number(bookId)).catch((error: unknown) => {
-      // Rollback on server failure
-      dispatch(removeFromCart(Number(bookId)));
-      const msg =
-        error instanceof Error ? error.message : 'Failed to sync cart';
-      toast.error(msg);
-    });
+    addToCartMutation.mutate(Number(bookId));
   };
+
+  const handleBorrow = async () => {
+    if (!user) {
+      toast.error('Please login to borrow books');
+      const callback = encodeURIComponent(`${pathname}?autoBorrow=true`);
+      router.push(`/login?callbackUrl=${callback}`);
+      return;
+    }
+
+    if (!isInCart) {
+      try {
+        await addToCartMutation.mutateAsync(Number(bookId));
+      } catch {
+        return; // Error handled by mutation toast
+      }
+    }
+
+    // Set ONLY this item as selected for checkout
+    dispatch(setSelections([Number(bookId)]));
+    router.push('/checkout');
+  };
+
+  // Auto-resume action after successful login redirect
+  useEffect(() => {
+    if (user && !autoProcessed.current) {
+      const autoAdd = searchParams.get('autoAdd');
+      const autoBorrow = searchParams.get('autoBorrow');
+
+      if (autoAdd === 'true') {
+        autoProcessed.current = true;
+        // Small timeout to allow hydration
+        setTimeout(() => handleAddToCart(), 100);
+        router.replace(pathname); // Clean up the URL
+      } else if (autoBorrow === 'true') {
+        autoProcessed.current = true;
+        setTimeout(() => handleBorrow(), 100);
+        router.replace(pathname); // Clean up the URL
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, searchParams, pathname, router]);
 
   return (
     <>
@@ -75,6 +106,7 @@ export function BookActionButtons({
           size='lg'
           className='h-12 w-40 rounded-full font-bold'
           disabled={availableCopies <= 0}
+          onClick={handleBorrow}
         >
           Borrow Book
         </Button>
@@ -93,6 +125,7 @@ export function BookActionButtons({
           <Button
             className='bg-primary text-primary-foreground h-10 grow rounded-full text-sm font-bold'
             disabled={availableCopies <= 0}
+            onClick={handleBorrow}
           >
             Borrow Book
           </Button>
