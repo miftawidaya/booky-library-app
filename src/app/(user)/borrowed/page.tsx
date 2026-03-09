@@ -1,7 +1,20 @@
+import type { Metadata } from 'next';
+
+import { BorrowedList } from '@/features/loans/components/borrowed-list';
+
+export const metadata: Metadata = {
+  title: 'Borrowed List',
+  description:
+    'View and manage your borrowed books, track due dates, and give reviews.',
+};
+
 export default function BorrowedPage() {
   return (
-    <div className='custom-container py-10'>
-      <h1 className='text-3xl font-bold'>My Borrowed Books</h1>
-    </div>
+    <>
+      <h1 className='text-display-xs md:text-display-sm text-foreground font-extrabold'>
+        Borrowed List
+      </h1>
+      <BorrowedList />
+    </>
   );
 }
