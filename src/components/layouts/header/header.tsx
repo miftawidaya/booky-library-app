@@ -88,7 +88,7 @@ export function Header({ className }: Readonly<{ className?: string }>) {
           {isAuthenticated && user ? (
             <UserMenu
               name={user.name}
-              avatarUrl={user.avatarUrl ?? undefined}
+              avatarUrl={user.profilePhoto ?? undefined}
             />
           ) : (
             <AuthButtons />

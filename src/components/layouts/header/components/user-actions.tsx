@@ -66,6 +66,8 @@ export function UserMenu({
   const { data: cartItems } = useCart();
   const cartCount = cartItems?.length ?? 0;
 
+  const safeName = name || 'User';
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -114,16 +116,16 @@ export function UserMenu({
           <Avatar className='border-border/50 size-10 border shadow-sm'>
             <AvatarImage
               src={avatarUrl ?? undefined}
-              alt={name}
+              alt={safeName}
               className='object-cover'
             />
             <AvatarFallback className='bg-primary/10 text-primary font-bold'>
-              {name.charAt(0).toUpperCase()}
+              {safeName.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className='hidden items-center gap-2 md:flex'>
             <span className='text-md-medium text-foreground tracking-tight'>
-              {name}
+              {safeName}
             </span>
             <Icon
               icon='mdi:chevron-down'
@@ -136,7 +138,7 @@ export function UserMenu({
           className='border-border/50 w-56 rounded-xl border p-2 shadow-md'
         >
           <div className='flex flex-col gap-1 p-2 md:hidden'>
-            <span className='truncate text-sm font-semibold'>{name}</span>
+            <span className='truncate text-sm font-semibold'>{safeName}</span>
             <DropdownMenuSeparator />
           </div>
 
