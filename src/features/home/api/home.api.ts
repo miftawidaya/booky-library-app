@@ -11,7 +11,7 @@ export const getCategories = async (): Promise<Category[]> => {
 };
 
 export const getRecommendedBooks = async (): Promise<Book[]> => {
-  const res = await fetch(`${API_URL}/books/recommend?limit=10`, {
+  const res = await fetch(`${API_URL}/books/recommend?by=rating&limit=10`, {
     next: { revalidate: 3600 },
   });
   if (!res.ok) throw new Error('Failed to fetch recommendations');
