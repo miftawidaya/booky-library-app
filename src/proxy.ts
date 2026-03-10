@@ -55,9 +55,14 @@ export async function proxy(request: NextRequest) {
   }
 
   // Authenticated users accessing /login or /register
-  // Guard Logic: Has token + accessing /login or /register -> Redirect to /profile
+  // Guard Logic: Has token + accessing /login or /register -> Redirect to redirect URL or role-based default
   if (token && (pathname === '/login' || pathname === '/register')) {
-    return NextResponse.redirect(new URL('/profile', request.url));
+    const redirectUrl = request.nextUrl.searchParams.get('redirect');
+    if (redirectUrl && redirectUrl !== '/') {
+      return NextResponse.redirect(new URL(redirectUrl, request.url));
+    }
+    const defaultDirect = userRole === 'ADMIN' ? '/admin' : '/';
+    return NextResponse.redirect(new URL(defaultDirect, request.url));
   }
 
   // Admin routes protection

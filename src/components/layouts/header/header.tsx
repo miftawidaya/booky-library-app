@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/ui/logo';
@@ -17,6 +18,7 @@ import {
 export function Header({ className }: Readonly<{ className?: string }>) {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
@@ -100,14 +102,14 @@ export function Header({ className }: Readonly<{ className?: string }>) {
         {isMobileMenuOpen && isAuthenticated === false && (
           <div className='border-border bg-background absolute inset-s-0 inset-e-0 top-16 -mt-px flex items-center gap-4 border-b p-4 shadow-sm md:hidden'>
             <Link
-              href='/login'
+              href={`/login?redirect=${encodeURIComponent(pathname)}`}
               className='border-primary/20 bg-background text-foreground flex h-11 w-full items-center justify-center rounded-xl border focus-visible:ring-2 focus-visible:outline-none'
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Login
             </Link>
             <Link
-              href='/register'
+              href={`/register?redirect=${encodeURIComponent(pathname)}`}
               className='bg-primary text-primary-foreground flex h-11 w-full items-center justify-center rounded-xl focus-visible:ring-2 focus-visible:outline-none'
               onClick={() => setIsMobileMenuOpen(false)}
             >

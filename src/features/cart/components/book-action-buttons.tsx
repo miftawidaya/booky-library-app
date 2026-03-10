@@ -36,8 +36,8 @@ export function BookActionButtons({
   const handleAddToCart = () => {
     if (!user) {
       toast.error('Please login to add items to your cart');
-      const callback = encodeURIComponent(`${pathname}?autoAdd=true`);
-      router.push(`/login?callbackUrl=${callback}`);
+      const redirectUrl = encodeURIComponent(`${pathname}?autoAdd=true`);
+      router.push(`/login?redirect=${redirectUrl}`);
       return;
     }
 
@@ -52,8 +52,8 @@ export function BookActionButtons({
   const handleBorrow = async () => {
     if (!user) {
       toast.error('Please login to borrow books');
-      const callback = encodeURIComponent(`${pathname}?autoBorrow=true`);
-      router.push(`/login?callbackUrl=${callback}`);
+      const redirectUrl = encodeURIComponent(`${pathname}?autoBorrow=true`);
+      router.push(`/login?redirect=${redirectUrl}`);
       return;
     }
 

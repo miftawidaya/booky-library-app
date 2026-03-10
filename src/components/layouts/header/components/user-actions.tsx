@@ -39,13 +39,15 @@ const USER_MENU_ITEMS = [
 ];
 
 export function AuthButtons() {
+  const pathname = usePathname();
+
   return (
     <div className='hidden items-center gap-3 md:flex'>
       <Button variant='outline' size='lg' className='min-w-32.5' asChild>
-        <Link href='/login'>Login</Link>
+        <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>Login</Link>
       </Button>
       <Button size='lg' className='min-w-32.5' asChild>
-        <Link href='/register'>Register</Link>
+        <Link href={`/register?redirect=${encodeURIComponent(pathname)}`}>Register</Link>
       </Button>
     </div>
   );
@@ -83,7 +85,7 @@ export function UserMenu({
       if (isPublicRoute) {
         router.refresh();
       } else {
-        router.push(`/login?callbackUrl=${encodeURIComponent(pathname)}`);
+        router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
       }
 
       toast.success('You have been logged out successfully.');

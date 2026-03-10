@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useAppSelector, useAppDispatch } from '@/lib/hooks-redux';
-import { selectIsAuthenticated, setCredentials } from '../store';
+import { selectIsAuthenticated, selectUser, setCredentials } from '../store';
 import { useLogin } from '../queries/auth.queries';
 import { loginSchema, type LoginValues } from '../types/auth.schema';
 
@@ -13,19 +13,24 @@ export function useLoginForm() {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const user = useAppSelector(selectUser);
   const { mutate: login, isPending } = useLogin();
 
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const redirectUrl = searchParams.get('redirect');
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      router.replace(callbackUrl);
+    if (isAuthenticated && user) {
+      if (redirectUrl && redirectUrl !== '/') {
+        router.replace(redirectUrl);
+      } else {
+        router.replace(user.role === 'ADMIN' ? '/admin' : '/');
+      }
     }
-  }, [isAuthenticated, router, callbackUrl]);
+  }, [isAuthenticated, user, router, redirectUrl]);
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -41,7 +46,11 @@ export function useLoginForm() {
       onSuccess: (data) => {
         if (data.success && data.data?.user) {
           dispatch(setCredentials(data.data.user));
-          router.push(callbackUrl);
+          if (redirectUrl && redirectUrl !== '/') {
+            router.push(redirectUrl);
+          } else {
+            router.push(data.data.user.role === 'ADMIN' ? '/admin' : '/');
+          }
         } else {
           setErrorMsg(data.message || 'Login failed');
         }
