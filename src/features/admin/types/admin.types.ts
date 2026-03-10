@@ -46,3 +46,31 @@ export interface GetAdminLoansParams {
   readonly limit?: number;
   readonly q?: string;
 }
+
+export interface AdminUser {
+  readonly id: number;
+  readonly name: string;
+  readonly email: string;
+  readonly phone: string | null;
+  readonly profilePhoto: string | null;
+  readonly role: 'ADMIN' | 'USER';
+  readonly createdAt: string;
+}
+
+export interface AdminUserPagination {
+  readonly page: number;
+  readonly limit: number;
+  readonly total: number;
+  readonly totalPages: number;
+}
+
+export interface AdminUserListResponse {
+  readonly users: AdminUser[];
+  readonly pagination: AdminUserPagination;
+}
+
+export interface GetAdminUsersParams {
+  readonly page?: number;
+  readonly limit?: number;
+  readonly q?: string;
+}
