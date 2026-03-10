@@ -1,8 +1,18 @@
+import type { Metadata } from 'next';
+import { AdminBooksList } from '@/features/admin/components/admin-books-list';
+
+export const metadata: Metadata = {
+  title: 'Books',
+  description: 'Manage all books in Booky.',
+};
+
 export default function AdminBooksPage() {
   return (
-    <div>
-      <h1 className='mb-4 text-3xl font-bold'>Manage Books</h1>
-      <p className='text-gray-600'>List of all books goes here.</p>
-    </div>
+    <>
+      <h1 className='display-xs-bold md:display-sm-extrabold text-foreground'>
+        Book List
+      </h1>
+      <AdminBooksList />
+    </>
   );
 }
