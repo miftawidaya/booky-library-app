@@ -3,22 +3,23 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const USER_TABS = [
-  { label: 'Profile', href: '/profile' },
-  { label: 'Borrowed List', href: '/borrowed' },
-  { label: 'Reviews', href: '/reviews' },
+const ADMIN_TABS = [
+  { label: 'Borrowed List', href: '/admin/loans' },
+  { label: 'User', href: '/admin/users' },
+  { label: 'Book List', href: '/admin/books' },
 ] as const;
 
 /**
- * Tab navigation shared across user pages (Profile, Borrowed List, Reviews).
+ * Tab navigation for admin management pages (Borrowed List, User, Book List).
  */
-export function UserTabNavigation() {
+export function AdminTabNavigation() {
   const pathname = usePathname();
 
   return (
     <nav className='bg-secondary flex items-center gap-2 rounded-2xl p-2 md:w-139.25'>
-      {USER_TABS.map((tab) => {
-        const isActive = pathname === tab.href;
+      {ADMIN_TABS.map((tab) => {
+        const isActive =
+          pathname === tab.href || pathname.startsWith(tab.href + '/');
         return (
           <Link
             key={tab.href}

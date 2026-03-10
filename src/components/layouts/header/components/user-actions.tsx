@@ -54,9 +54,11 @@ export function AuthButtons() {
 export function UserMenu({
   name,
   avatarUrl,
+  role,
 }: Readonly<{
   name: string;
   avatarUrl?: string;
+  role?: 'ADMIN' | 'USER';
 }>) {
   const pathname = usePathname();
   const router = useRouter();
@@ -151,6 +153,17 @@ export function UserMenu({
               <Link href={item.href ?? '#'}>{item.label}</Link>
             </DropdownMenuItem>
           ))}
+          {role === 'ADMIN' && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                asChild
+                className='hover:bg-muted focus:bg-muted cursor-pointer rounded-lg p-2 text-sm font-medium'
+              >
+                <Link href='/admin/loans'>Admin Panel</Link>
+              </DropdownMenuItem>
+            </>
+          )}
           <DropdownMenuItem
             onClick={handleLogout}
             className='text-destructive focus:bg-destructive/10 cursor-pointer rounded-lg p-2 text-sm font-medium'
