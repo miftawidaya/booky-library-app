@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { API_URL } from '@/config/env';
 
 export async function GET(request: NextRequest) {
-  const token = (await cookies()).get('token')?.value;
+  const token = (await cookies()).get('authToken')?.value;
 
   if (!token) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
   } catch (error) {
+    console.error('[ME_REVIEWS_GET]', error);
     return NextResponse.json(
       { message: 'Internal Server Error' },
       { status: 500 }

@@ -45,7 +45,7 @@ export const getBookReviews = async (
 
 export const getMyReviews = async (
   page: number = 1,
-  limit: number = 10
+  limit: number = 3
 ): Promise<PaginatedReviews> => {
   const res = await fetch(`/api/me/reviews?page=${page}&limit=${limit}`, {
     method: 'GET',
@@ -59,14 +59,22 @@ export const getMyReviews = async (
   }
 
   const json = await res.json();
+  
+  /**
+   * Defensive mapping to handle multiple response variants from the backend.
+   * Variant A: { success: true, data: { reviews: [...], pagination: {...} } }
+   * Variant B: { success: true, data: [...], pagination: {...} }
+   */
+  const reviews = json.data?.reviews || (Array.isArray(json.data) ? json.data : []);
+  const pagination = json.data?.pagination || json.pagination || {
+    total: reviews.length,
+    page: 1,
+    limit: limit,
+    totalPages: 1,
+  };
 
   return {
-    reviews: json.data?.items || [],
-    pagination: json.data?.pagination || {
-      total: 0,
-      page: 1,
-      limit: 10,
-      totalPages: 1,
-    },
+    reviews,
+    pagination,
   };
 };

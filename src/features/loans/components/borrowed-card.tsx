@@ -50,7 +50,10 @@ export function BorrowedCard({ loan }: BorrowedCardProps) {
           <span className='text-foreground md:text-md text-sm font-bold md:font-bold'>
             Due Date
           </span>
-          <span className='bg-status-overdue/10 text-status-overdue flex items-center justify-center rounded-xs py-0.5 ps-2 pe-2 text-sm font-bold tracking-tight'>
+          <span 
+            className='bg-status-overdue/10 text-status-overdue flex items-center justify-center rounded-xs py-0.5 ps-2 pe-2 text-sm font-bold tracking-tight'
+            suppressHydrationWarning
+          >
             {dueDate.format('DD MMMM YYYY')}
           </span>
         </div>
@@ -105,7 +108,10 @@ export function BorrowedCard({ loan }: BorrowedCardProps) {
             <p className='text-muted-foreground md:text-md truncate text-sm font-medium md:font-medium'>
               {loan.book.author.name}
             </p>
-            <div className='text-foreground md:text-md flex items-center gap-2 pt-1 text-sm font-bold md:font-bold'>
+            <div 
+              className='text-foreground md:text-md flex items-center gap-2 pt-1 text-sm font-bold md:font-bold'
+              suppressHydrationWarning
+            >
               <span>{borrowDate.format('DD MMM YYYY')}</span>
               <div className='bg-foreground size-0.5 rounded-full' />
               <span className='whitespace-nowrap'>

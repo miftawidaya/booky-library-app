@@ -42,6 +42,7 @@ export function ReviewCard({
                 src={review.user.photo}
                 alt={review.user.name ?? 'User'}
                 fill
+                unoptimized
                 sizes='(max-width: 768px) 40px, 48px'
                 className='object-cover'
               />
@@ -60,7 +61,10 @@ export function ReviewCard({
             <span className='md:text-md text-foreground text-sm font-extrabold'>
               {review.user?.name ?? 'Anonymous'}
             </span>
-            <span className='text-foreground text-xs font-normal tracking-tight md:text-sm'>
+            <span 
+              className='text-foreground text-xs font-normal tracking-tight md:text-sm'
+              suppressHydrationWarning
+            >
               {dayjs(review.createdAt).format('D MMMM YYYY, HH:mm')}
             </span>
           </div>

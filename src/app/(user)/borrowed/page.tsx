@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function BorrowedPage() {
   return (
     <>
-      <h1 className='text-display-xs md:text-display-sm text-foreground font-extrabold'>
+      <h1 className='display-xs-bold md:display-sm-extrabold text-foreground'>
         Borrowed List
       </h1>
       <BorrowedList />

@@ -31,11 +31,6 @@ export function ProfileCard() {
 
   return (
     <div className='flex flex-col gap-4 md:w-139.25 md:gap-6'>
-      {/* Title - Desktop Only */}
-      <h1 className='text-display-sm text-foreground hidden font-bold md:block'>
-        Profile
-      </h1>
-
       <div className='shadow-card dark:border-border bg-background flex flex-col items-start gap-4 rounded-2xl p-4 md:gap-6 md:p-5 dark:border dark:shadow-none'>
         <div className='flex w-full flex-col items-start gap-2 md:gap-3'>
           {/* Avatar Area */}
@@ -45,6 +40,7 @@ export function ProfileCard() {
                 src={user.profilePhoto}
                 alt={user.name}
                 fill
+                unoptimized
                 sizes='64px'
                 className='object-cover'
               />

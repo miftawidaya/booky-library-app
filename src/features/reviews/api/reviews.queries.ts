@@ -47,11 +47,11 @@ export function useInfiniteMyReviews() {
   return useInfiniteQuery({
     queryKey: ['my-reviews'],
     queryFn: async ({ pageParam = 1 }): Promise<PaginatedReviews> => {
-      return getMyReviews(pageParam, 10);
+      return getMyReviews(pageParam, 3);
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (lastPage.reviews.length < 10) {
+      if (lastPage.reviews.length < 3) {
         return undefined;
       }
       return lastPage.pagination.page + 1;

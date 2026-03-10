@@ -10,7 +10,6 @@ import { UserReviewCard } from './user-review-card';
 
 /**
  * Main client component for the User's Reviews List page.
- * Re-uses styling analogous to BorrowedList for the Search header.
  */
 export function UserReviewsList() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,9 +17,13 @@ export function UserReviewsList() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteMyReviews();
 
-  // Aggregate all reviews across infinite pages
-  const reviews =
+  // Aggregate all reviews across infinite pages and de-duplicate by id
+  const allReviews =
     data?.pages.flatMap((page) => page.reviews ?? []).filter(Boolean) ?? [];
+
+  const reviews = Array.from(
+    new Map(allReviews.map((r) => [r.id, r])).values()
+  );
 
   // Frontend-filtered reviews via search
   const filteredReviews = reviews.filter((review) => {
@@ -28,13 +31,14 @@ export function UserReviewsList() {
     const lowerQuery = searchQuery.toLowerCase();
     return (
       review.book?.title?.toLowerCase().includes(lowerQuery) ||
-      review.book?.author?.name?.toLowerCase().includes(lowerQuery)
+      review.book?.author?.name?.toLowerCase().includes(lowerQuery) ||
+      review.book?.authors?.[0]?.name?.toLowerCase().includes(lowerQuery)
     );
   });
 
   return (
     <div className='flex flex-col gap-5 md:gap-6'>
-      {/* Search Bar (mirrors borrowed list) */}
+      {/* Search Bar */}
       <div className='border-input bg-card flex h-10 w-full max-w-136 items-center gap-2 rounded-full border ps-3 pe-3 md:h-12 md:ps-4 md:pe-4'>
         <SearchMd
           size={18}
@@ -55,7 +59,7 @@ export function UserReviewsList() {
           {['skel-1', 'skel-2', 'skel-3'].map((id) => (
             <div
               key={id}
-              className='border-border bg-muted/30 h-[346px] w-full animate-pulse rounded-2xl border md:h-[380px]'
+              className='border-border bg-muted/30 h-86.5 w-full animate-pulse rounded-2xl border md:h-95'
             />
           ))}
         </div>

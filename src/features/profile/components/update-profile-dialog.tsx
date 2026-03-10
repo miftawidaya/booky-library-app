@@ -74,7 +74,7 @@ export function UpdateProfileDialog({
       }
 
       if (user) {
-        dispatch(setCredentials(optimisticUser as NonNullable<typeof user>));
+        dispatch(setCredentials(optimisticUser));
       }
 
       onOpenChange(false);
@@ -121,7 +121,7 @@ export function UpdateProfileDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='w-full max-w-[90vw] rounded-2xl p-6 md:max-w-100'>
         <DialogHeader className='mb-4'>
-          <DialogTitle className='text-display-xs text-foreground font-bold'>
+          <DialogTitle className='text-foreground display-xs-bold'>
             Update Profile
           </DialogTitle>
         </DialogHeader>
@@ -138,6 +138,7 @@ export function UpdateProfileDialog({
                   src={photoPreview}
                   alt='Preview'
                   fill
+                  unoptimized
                   sizes='80px'
                   className='object-cover'
                 />
@@ -175,10 +176,7 @@ export function UpdateProfileDialog({
           <div className='flex flex-col gap-4'>
             {/* Name Field */}
             <div className='flex flex-col gap-1.5'>
-              <label
-                htmlFor='name'
-                className='text-foreground text-sm font-bold'
-              >
+              <label htmlFor='name' className='text-foreground text-sm-bold'>
                 Name
               </label>
               <input
@@ -186,21 +184,18 @@ export function UpdateProfileDialog({
                 id='name'
                 type='text'
                 placeholder='Enter your name'
-                className='border-input placeholder:text-muted-foreground focus-visible:ring-ring bg-background text-foreground h-11 w-full rounded-lg border px-3 text-sm focus-visible:ring-2 focus-visible:outline-none'
+                className='border-input bg-background text-foreground text-sm-medium placeholder:text-muted-foreground focus-visible:ring-ring h-11 w-full rounded-lg border px-3 focus-visible:ring-2 focus-visible:outline-none'
               />
               {form.formState.errors.name && (
                 <p className='text-destructive text-sm font-medium'>
-                  {form.formState.errors.name.message}
+                  {form.formState.errors.name.message as string}
                 </p>
               )}
             </div>
 
             {/* Phone Field */}
             <div className='flex flex-col gap-1.5'>
-              <label
-                htmlFor='phone'
-                className='text-foreground text-sm font-bold'
-              >
+              <label htmlFor='phone' className='text-foreground text-sm-bold'>
                 Nomor Handphone
               </label>
               <input
@@ -208,11 +203,11 @@ export function UpdateProfileDialog({
                 id='phone'
                 type='tel'
                 placeholder='081234567890'
-                className='border-input placeholder:text-muted-foreground focus-visible:ring-ring bg-background text-foreground h-11 w-full rounded-lg border px-3 text-sm focus-visible:ring-2 focus-visible:outline-none'
+                className='border-input bg-background text-foreground text-sm-medium placeholder:text-muted-foreground focus-visible:ring-ring h-11 w-full rounded-lg border px-3 focus-visible:ring-2 focus-visible:outline-none'
               />
               {form.formState.errors.phone && (
                 <p className='text-destructive text-sm font-medium'>
-                  {form.formState.errors.phone.message}
+                  {form.formState.errors.phone.message as string}
                 </p>
               )}
             </div>

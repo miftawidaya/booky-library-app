@@ -45,7 +45,11 @@ export function ReviewList({
     deleteReview.mutate(reviewId);
   };
 
-  const reviews = data?.pages.flatMap((page) => page.reviews) ?? [];
+  // Aggregate all reviews across infinite pages and de-duplicate by id
+  const allReviews = data?.pages.flatMap((page) => page.reviews) ?? [];
+  const reviews = Array.from(
+    new Map(allReviews.map((r) => [r.id, r])).values()
+  );
 
   return (
     <div className='flex flex-col gap-6 md:gap-8'>

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function ProfilePage() {
   return (
     <>
-      <h1 className='text-display-xs text-foreground font-extrabold md:hidden'>
+      <h1 className='display-xs-bold md:display-sm-extrabold text-foreground'>
         Profile
       </h1>
       <ProfileCard />

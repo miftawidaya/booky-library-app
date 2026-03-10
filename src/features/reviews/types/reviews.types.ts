@@ -24,6 +24,10 @@ export interface Review {
       id: number;
       name: string;
     };
+    authors?: Array<{
+      id: number;
+      name: string;
+    }>;
     category?: {
       id: number;
       name: string;
