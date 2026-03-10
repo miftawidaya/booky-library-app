@@ -22,7 +22,7 @@ export function UserReviewCard({ review }: UserReviewCardProps) {
     <div className='bg-primary-foreground shadow-card flex w-full flex-col items-start gap-4 rounded-2xl p-4 md:h-95 md:gap-5 md:p-5'>
       {/* Date Header */}
       <div className='flex items-center gap-3 md:h-[30px]'>
-        <span className='text-foreground font-quicksand text-sm font-semibold leading-7 tracking-[-0.02em] md:text-base md:leading-[30px]'>
+        <span className='text-foreground font-quicksand text-sm leading-7 font-semibold tracking-[-0.02em] md:text-base md:leading-[30px]'>
           {formattedDate}
         </span>
       </div>
@@ -32,7 +32,6 @@ export function UserReviewCard({ review }: UserReviewCardProps) {
 
       {/* Main Content Area */}
       <div className='flex w-full flex-col items-start gap-4 md:flex-row md:items-center md:gap-[115px]'>
-        
         {/* Left Side: Book Info (Image + Details) */}
         <div className='flex items-center gap-3 md:w-full md:flex-1 md:gap-4'>
           {/* Cover Image */}
@@ -59,18 +58,18 @@ export function UserReviewCard({ review }: UserReviewCardProps) {
           <div className='flex flex-col items-start gap-1'>
             {/* Category Tag */}
             <div className='border-border box-border flex h-7 items-center justify-center rounded-md border px-2'>
-              <span className='text-foreground font-quicksand text-sm font-bold leading-7 tracking-[-0.02em]'>
+              <span className='text-foreground font-quicksand text-sm leading-7 font-bold tracking-[-0.02em]'>
                 {review.book?.category?.name ?? 'Uncategorized'}
               </span>
             </div>
 
             {/* Book Title */}
-            <h3 className='text-foreground font-quicksand line-clamp-1 text-base font-bold leading-[30px] tracking-[-0.02em] md:text-xl md:leading-[34px]'>
+            <h3 className='text-foreground font-quicksand line-clamp-1 text-base leading-[30px] font-bold tracking-[-0.02em] md:text-xl md:leading-[34px]'>
               {review.book?.title}
             </h3>
 
             {/* Author */}
-            <p className='font-quicksand text-sm font-medium leading-7 tracking-[-0.03em] text-[#414651] md:text-base md:leading-[30px]'>
+            <p className='font-quicksand text-sm leading-7 font-medium tracking-[-0.03em] text-[#414651] md:text-base md:leading-[30px]'>
               {review.book?.author?.name ?? 'Unknown Author'}
             </p>
           </div>
@@ -97,7 +96,7 @@ export function UserReviewCard({ review }: UserReviewCardProps) {
         </div>
 
         {/* Comment Text */}
-        <p className='text-foreground font-quicksand line-clamp-3 text-sm font-semibold leading-7 tracking-[-0.02em] md:line-clamp-2 md:text-base md:leading-[30px]'>
+        <p className='text-foreground font-quicksand line-clamp-3 text-sm leading-7 font-semibold tracking-[-0.02em] md:line-clamp-2 md:text-base md:leading-[30px]'>
           {review.comment ?? 'No comment provided.'}
         </p>
       </div>
