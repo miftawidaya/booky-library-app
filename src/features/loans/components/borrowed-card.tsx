@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 
 import { Button } from '@/components/ui/button';
 import { GiveReviewDialog } from '@/features/reviews/components/give-review-dialog';
+import { useReturnLoan } from '@/features/loans/api/loans.mutations';
 import type { Loan } from '@/features/loans/types/loans.types';
 
 interface BorrowedCardProps {
@@ -31,6 +32,9 @@ export function BorrowedCard({ loan }: BorrowedCardProps) {
   const statusLabel = loan.displayStatus ?? loan.status;
 
   const [isReviewOpen, setIsReviewOpen] = React.useState(false);
+  const { mutate: returnBook, isPending: isReturning } = useReturnLoan();
+
+  const isReturned = loan.status === 'RETURNED';
 
   return (
     <div className='card'>
@@ -121,14 +125,25 @@ export function BorrowedCard({ loan }: BorrowedCardProps) {
           </div>
         </div>
 
-        {/* Give Review Button */}
+        {/* Action Button: Return or Give Review */}
         <div className='shrink-0'>
-          <Button
-            className='text-primary-foreground text-md h-10 w-full rounded-full font-bold md:w-45.5'
-            onClick={() => setIsReviewOpen(true)}
-          >
-            Give Review
-          </Button>
+          {isReturned ? (
+             <Button
+               className='bg-primary text-primary-foreground text-md h-10 w-full rounded-full font-bold hover:bg-primary/90 md:w-45.5'
+               onClick={() => setIsReviewOpen(true)}
+             >
+               Give Review
+             </Button>
+          ) : (
+             <Button
+               variant='outline'
+               className='border-primary text-primary text-md h-10 w-full rounded-full bg-transparent font-bold hover:bg-primary/10 md:w-45.5'
+               disabled={isReturning}
+               onClick={() => returnBook(loan.id)}
+             >
+               {isReturning ? 'Returning...' : 'Return Book'}
+             </Button>
+          )}
         </div>
       </div>
 
