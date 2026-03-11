@@ -28,33 +28,46 @@ interface GiveReviewDialogProps {
   readonly bookId: number;
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
+  readonly reviewId?: number;
+  readonly initialData?: {
+    readonly star: number;
+    readonly comment: string;
+  };
 }
 
-/**
- * GiveReviewDialog component
- *
- * Implements the Figma design for the review popup.
- * Provides star rating and comment input.
- */
 export function GiveReviewDialog({
   bookId,
   open,
   onOpenChange,
+  reviewId,
+  initialData,
 }: GiveReviewDialogProps) {
   const router = useRouter();
   const [hoveredStar, setHoveredStar] = React.useState(0);
+  const isEditMode = !!reviewId;
 
   const form = useForm<ReviewFormValues>({
     resolver: zodResolver(reviewSchema),
-    defaultValues: { star: 0, comment: '' },
+    defaultValues: initialData ?? { star: 0, comment: '' },
   });
+
+  // Re-sync form default values if modal opens with different edit data
+  React.useEffect(() => {
+    if (open) {
+      form.reset(initialData ?? { star: 0, comment: '' });
+      setHoveredStar(0);
+    }
+  }, [open, initialData, form]);
 
   const createReview = useCreateReview({
     onSuccess: () => {
-      toast.success('Review submitted successfully');
+      toast.success(
+        isEditMode
+          ? 'Review updated successfully'
+          : 'Review submitted successfully'
+      );
       form.reset();
       onOpenChange(false);
-      // Navigate to the user's review list page
       router.push('/reviews');
     },
     onError: (error) => {
@@ -70,15 +83,24 @@ export function GiveReviewDialog({
     });
   };
 
+  const isSaving = createReview.isPending;
+
   const selectedStar = form.watch('star');
   const displayStar = hoveredStar > 0 ? hoveredStar : selectedStar;
+
+  let submitButtonText: string;
+  if (isSaving) {
+    submitButtonText = isEditMode ? 'Updating...' : 'Sending...';
+  } else {
+    submitButtonText = isEditMode ? 'Update Review' : 'Send';
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='flex h-119.75 w-86.25 max-w-none flex-col items-center gap-6 p-4 md:h-129.5 md:w-109.75 md:gap-6 md:p-6'>
         <DialogHeader className='flex w-full flex-row items-center justify-between gap-0 p-0'>
           <DialogTitle className='text-foreground text-[18px] leading-8 font-bold tracking-[-0.03em] md:text-[24px] md:leading-9 md:font-bold md:tracking-normal'>
-            Give Review
+            {isEditMode ? 'Edit Review' : 'Give Review'}
           </DialogTitle>
         </DialogHeader>
 
@@ -139,10 +161,10 @@ export function GiveReviewDialog({
           {/* Submit Button */}
           <Button
             type='submit'
-            disabled={createReview.isPending}
+            disabled={isSaving}
             className='bg-primary hover:bg-primary/90 text-primary-foreground h-10 w-full rounded-full text-[14px] leading-7 font-bold tracking-[-0.02em] md:h-12 md:text-[16px] md:leading-7.5'
           >
-            {createReview.isPending ? 'Sending...' : 'Send'}
+            {submitButtonText}
           </Button>
         </form>
       </DialogContent>

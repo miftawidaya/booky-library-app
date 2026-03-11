@@ -10,6 +10,7 @@ interface ReviewCardProps {
   readonly review: Review;
   readonly className?: string;
   readonly currentUserId?: number | string | null;
+  readonly onEdit?: (review: Review) => void;
   readonly onDelete?: (reviewId: number) => void;
   readonly isDeleting?: boolean;
 }
@@ -18,6 +19,7 @@ export function ReviewCard({
   review,
   className,
   currentUserId,
+  onEdit,
   onDelete,
   isDeleting,
 }: ReviewCardProps) {
@@ -70,17 +72,32 @@ export function ReviewCard({
           </div>
         </div>
 
-        {/* Delete Button */}
-        {isOwnReview && onDelete && (
-          <button
-            type='button'
-            onClick={() => onDelete(review.id)}
-            disabled={isDeleting}
-            className='text-muted-foreground hover:text-destructive focus-visible:ring-ring rounded-full p-1 transition-colors focus-visible:ring-2 focus-visible:outline-none'
-            aria-label='Delete review'
-          >
-            <Icon icon='ri:delete-bin-6-line' className='size-4.5' />
-          </button>
+        {/* Actions Button Group */}
+        {isOwnReview && (
+          <div className='flex items-center gap-1 md:gap-2'>
+            {onEdit && (
+              <button
+                type='button'
+                onClick={() => onEdit(review)}
+                disabled={isDeleting}
+                className='text-muted-foreground hover:text-primary focus-visible:ring-ring cursor-pointer rounded-full p-1 transition-colors focus-visible:ring-2 focus-visible:outline-none'
+                aria-label='Edit review'
+              >
+                <Icon icon='ri:pencil-line' className='size-4.5' />
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type='button'
+                onClick={() => onDelete(review.id)}
+                disabled={isDeleting}
+                className='text-muted-foreground hover:text-destructive focus-visible:ring-ring cursor-pointer rounded-full p-1 transition-colors focus-visible:ring-2 focus-visible:outline-none'
+                aria-label='Delete review'
+              >
+                <Icon icon='ri:delete-bin-6-line' className='size-4.5' />
+              </button>
+            )}
+          </div>
         )}
       </div>
 

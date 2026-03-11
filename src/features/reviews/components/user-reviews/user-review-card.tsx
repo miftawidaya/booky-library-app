@@ -6,27 +6,65 @@ import type { Review } from '../../types/reviews.types';
 
 interface UserReviewCardProps {
   readonly review: Review;
+  readonly onEdit?: (review: Review) => void;
+  readonly onDelete?: (reviewId: number) => void;
+  readonly isDeleting?: boolean;
 }
 
 /**
  * UserReviewCard displays a single book review left by the authenticated user.
  */
-export function UserReviewCard({ review }: UserReviewCardProps) {
+export function UserReviewCard({
+  review,
+  onEdit,
+  onDelete,
+  isDeleting,
+}: UserReviewCardProps) {
   // Normalize the star value from the payload
   const starCount = review.star ?? review.rating ?? 0;
   // Format Date to match "25 August 2025, 13:38"
   const formattedDate = dayjs(review.createdAt).format('DD MMMM YYYY, HH:mm');
 
   return (
-    <div className='card w-full'>
-      {/* Date Header */}
-      <div className='flex items-center gap-3 md:h-7.5'>
+    <div
+      className={`card w-full ${isDeleting ? 'pointer-events-none opacity-50' : ''}`}
+    >
+      {/* Date Header & Actions */}
+      <div className='flex w-full items-center justify-between md:h-7.5'>
         <span
           className='text-foreground text-sm-semibold md:text-md-semibold'
           suppressHydrationWarning
         >
           {formattedDate}
         </span>
+
+        {/* Actions Button Group */}
+        {(onEdit || onDelete) && (
+          <div className='flex items-center gap-1 md:gap-2'>
+            {onEdit && (
+              <button
+                type='button'
+                onClick={() => onEdit(review)}
+                disabled={isDeleting}
+                className='text-muted-foreground hover:text-primary focus-visible:ring-ring cursor-pointer rounded-full p-1 transition-colors focus-visible:ring-2 focus-visible:outline-none'
+                aria-label='Edit review'
+              >
+                <Icon icon='ri:pencil-line' className='size-4.5 md:size-5' />
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type='button'
+                onClick={() => onDelete(review.id)}
+                disabled={isDeleting}
+                className='text-muted-foreground hover:text-destructive focus-visible:ring-ring cursor-pointer rounded-full p-1 transition-colors focus-visible:ring-2 focus-visible:outline-none'
+                aria-label='Delete review'
+              >
+                <Icon icon='ri:delete-bin-6-line' className='size-4.5 md:size-5' />
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Divider */}

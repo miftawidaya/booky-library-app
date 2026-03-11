@@ -66,12 +66,14 @@ export function useRegisterForm() {
                   }
                 } else {
                   // Fallback if auto-login fails
-                  router.push(`/login?registered=true${redirectUrl ? `&redirect=${encodeURIComponent(redirectUrl)}` : ''}`);
+                  const redirectQueryString = redirectUrl ? `&redirect=${encodeURIComponent(redirectUrl)}` : '';
+                  router.push(`/login?registered=true${redirectQueryString}`);
                 }
               },
               onError: () => {
                 // Fallback to manual login route on error
-                router.push(`/login?registered=true${redirectUrl ? `&redirect=${encodeURIComponent(redirectUrl)}` : ''}`);
+                const redirectQueryString = redirectUrl ? `&redirect=${encodeURIComponent(redirectUrl)}` : '';
+                router.push(`/login?registered=true${redirectQueryString}`);
               },
             }
           );

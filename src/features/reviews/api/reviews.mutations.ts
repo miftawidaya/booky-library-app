@@ -7,6 +7,8 @@ interface CreateReviewPayload {
   readonly comment: string;
 }
 
+
+
 interface ReviewApiResponse {
   readonly success: boolean;
   readonly message: string;
@@ -33,6 +35,7 @@ async function createReviewApi(
 
   return data;
 }
+
 
 /**
  * Deletes own review via the proxy route.
@@ -66,21 +69,30 @@ export function useCreateReview(options?: {
     onError: options?.onError,
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ['reviews'] });
+      void queryClient.invalidateQueries({ queryKey: ['my-reviews'] });
     },
   });
 }
 
 /**
+ * Context type for optimistic updates.
+ */
+export type ReviewMutationContext = { previousReviews: unknown } | void | undefined;
+
+
+/**
  * TanStack Query mutation hook for deleting own review.
- * Accepts an onSuccess callback for optimistic UI updates.
+ * Accepts options for optimistic UI updates including onMutate, onSuccess, and onError.
  */
 export function useDeleteReview(options?: {
-  onSuccess?: (data: ReviewApiResponse) => void;
-  onError?: (error: Error) => void;
+  onMutate?: (reviewId: number) => Promise<ReviewMutationContext> | ReviewMutationContext;
+  onSuccess?: (data: ReviewApiResponse, variables: number, context: ReviewMutationContext) => void;
+  onError?: (error: Error, variables: number, context: ReviewMutationContext) => void;
 }) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteReviewApi,
+    onMutate: options?.onMutate,
     onSuccess: options?.onSuccess,
     onError: options?.onError,
     onSettled: () => {

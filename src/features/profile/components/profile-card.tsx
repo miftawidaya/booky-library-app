@@ -6,11 +6,25 @@ import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import type { RootState } from '@/lib/store';
 import { Button } from '@/components/ui/button';
+import { useMyLoans } from '@/features/loans/api/loans.queries';
 import { UpdateProfileDialog } from './update-profile-dialog';
 
 export function ProfileCard() {
   const user = useSelector((state: RootState) => state.auth.user);
   const [isUpdateOpen, setIsUpdateOpen] = React.useState(false);
+
+  // Fetch loan statistics using the first page metadata of each status
+  const { data: allLoans, isLoading: loadingAll } = useMyLoans('all');
+  const { data: activeLoans, isLoading: loadingActive } = useMyLoans('active');
+  const { data: overdueLoans, isLoading: loadingOverdue } = useMyLoans('overdue');
+
+  const stats = {
+    total: allLoans?.pages[0]?.pagination.total ?? 0,
+    active: activeLoans?.pages[0]?.pagination.total ?? 0,
+    overdue: overdueLoans?.pages[0]?.pagination.total ?? 0,
+  };
+
+  const isStatsLoading = loadingAll || loadingActive || loadingOverdue;
 
   if (!user) {
     return (
@@ -53,6 +67,38 @@ export function ProfileCard() {
               </div>
             )}
           </div>
+
+          <div className='bg-border my-2 h-px w-full' />
+
+          {/* Stats Area */}
+          <div className='flex w-full items-center justify-between gap-2 md:gap-4'>
+            <div className='bg-primary/5 border-primary/20 flex flex-1 flex-col items-center justify-center rounded-xl border py-3 md:py-4'>
+              <span className='text-muted-foreground text-xs font-semibold md:text-sm'>
+                Total Loans
+              </span>
+              <span className='text-primary text-xl font-black md:text-2xl'>
+                {isStatsLoading ? '-' : stats.total}
+              </span>
+            </div>
+            <div className='bg-status-active/5 border-status-active/20 flex flex-1 flex-col items-center justify-center rounded-xl border py-3 md:py-4'>
+              <span className='text-muted-foreground text-xs font-semibold md:text-sm'>
+                Active
+              </span>
+              <span className='text-status-active text-xl font-black md:text-2xl'>
+                {isStatsLoading ? '-' : stats.active}
+              </span>
+            </div>
+            <div className='bg-status-overdue/5 border-status-overdue/20 flex flex-1 flex-col items-center justify-center rounded-xl border py-3 md:py-4'>
+              <span className='text-muted-foreground text-xs font-semibold md:text-sm'>
+                Overdue
+              </span>
+              <span className='text-status-overdue text-xl font-black md:text-2xl'>
+                {isStatsLoading ? '-' : stats.overdue}
+              </span>
+            </div>
+          </div>
+
+          <div className='bg-border my-2 h-px w-full' />
 
           {/* Profile Rows */}
           {profileRows.map((row) => (

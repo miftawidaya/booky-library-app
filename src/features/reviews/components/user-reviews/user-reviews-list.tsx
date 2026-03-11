@@ -6,6 +6,28 @@ import { SearchMd } from '@untitledui/icons';
 
 import { Button } from '@/components/ui/button';
 import { useInfiniteMyReviews } from '@/features/reviews/api/reviews.queries';
+import { useDeleteReview } from '@/features/reviews/api/reviews.mutations';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
+import type { PaginatedReviews } from '@/features/reviews/api/reviews.api';
+import type { Review } from '@/features/reviews/types/reviews.types';
+import { GiveReviewDialog } from '@/features/reviews/components/give-review-dialog';
+
+type InfiniteReviewsData = { pages: PaginatedReviews[]; pageParams: unknown[] };
+
+function removeReviewFromCache(
+  old: InfiniteReviewsData | undefined,
+  reviewId: number
+): InfiniteReviewsData | undefined {
+  if (!old) return old;
+  return {
+    ...old,
+    pages: old.pages.map((page) => ({
+      ...page,
+      reviews: page.reviews.filter((r) => r.id !== reviewId),
+    })),
+  };
+}
 import { UserReviewCard } from './user-review-card';
 
 /**
@@ -13,9 +35,59 @@ import { UserReviewCard } from './user-review-card';
  */
 export function UserReviewsList() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+
+  const queryClient = useQueryClient();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteMyReviews();
+
+  const deleteReview = useDeleteReview({
+    onMutate: async (reviewId: number) => {
+      // Cancel any outgoing refetches to avoid overwriting optimistic update
+      await queryClient.cancelQueries({ queryKey: ['my-reviews'] });
+
+      // Snapshot previous value
+      const previousReviews = queryClient.getQueryData(['my-reviews']);
+
+      // Optimistically remove the review from all pages
+      queryClient.setQueryData(
+        ['my-reviews'],
+        (old: InfiniteReviewsData | undefined) => removeReviewFromCache(old, reviewId)
+      );
+
+      return { previousReviews };
+    },
+    onSuccess: (_, reviewId, context) => {
+      toast.success('Review deleted', {
+        action: {
+          label: 'Undo',
+          onClick: () => {
+            // Restore previous state if undo is clicked
+            if (context?.previousReviews) {
+              queryClient.setQueryData(['my-reviews'], context.previousReviews);
+              toast('Review restored');
+            }
+          },
+        },
+      });
+      setDeletingId(null);
+    },
+    onError: (error, __, context) => {
+      // Rollback on error
+      if (context?.previousReviews) {
+         queryClient.setQueryData(['my-reviews'], context.previousReviews);
+      }
+      toast.error(error.message || 'Failed to delete review');
+      setDeletingId(null);
+    },
+  });
+
+  const handleDeleteReview = (reviewId: number) => {
+    setDeletingId(reviewId);
+    deleteReview.mutate(reviewId);
+  };
 
   // Aggregate all reviews across infinite pages and de-duplicate by id
   const allReviews =
@@ -84,9 +156,29 @@ export function UserReviewsList() {
       {!isLoading && filteredReviews.length > 0 && (
         <div className='flex flex-col gap-4'>
           {filteredReviews.map((review) => (
-            <UserReviewCard key={`rev-${review.id}`} review={review} />
+            <UserReviewCard 
+              key={`rev-${review.id}`} 
+              review={review} 
+              onEdit={setEditingReview}
+              onDelete={handleDeleteReview}
+              isDeleting={deletingId === review.id}
+            />
           ))}
         </div>
+      )}
+
+      {/* Edit Review Dialog */}
+      {editingReview && (
+        <GiveReviewDialog
+          bookId={editingReview.book?.id ?? 0}
+          reviewId={editingReview.id}
+          open={!!editingReview}
+          onOpenChange={(isOpen) => !isOpen && setEditingReview(null)}
+          initialData={{
+            star: editingReview.star ?? editingReview.rating ?? 0,
+            comment: editingReview.comment ?? '',
+          }}
+        />
       )}
 
       {/* Load More Pagination */}

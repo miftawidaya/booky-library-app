@@ -4,13 +4,32 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ReviewCard } from '@/features/reviews/components/review-card';
 import { ReviewForm } from '@/features/reviews/components/review-form';
+import { GiveReviewDialog } from '@/features/reviews/components/give-review-dialog';
 import { Button } from '@/components/ui/button';
 import type { Review } from '@/features/reviews/types/reviews.types';
 import { useInfiniteReviews } from '@/features/reviews/api/reviews.queries';
 import { useDeleteReview } from '@/features/reviews/api/reviews.mutations';
 import { Icon } from '@iconify/react';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
+import type { PaginatedReviews } from '@/features/reviews/api/reviews.api';
 import type { RootState } from '@/lib/store';
+
+type InfiniteReviewsData = { pages: PaginatedReviews[]; pageParams: unknown[] };
+
+function removeReviewFromCache(
+  old: InfiniteReviewsData | undefined,
+  reviewId: number
+): InfiniteReviewsData | undefined {
+  if (!old) return old;
+  return {
+    ...old,
+    pages: old.pages.map((page) => ({
+      ...page,
+      reviews: page.reviews.filter((r) => r.id !== reviewId),
+    })),
+  };
+}
 
 interface ReviewListProps {
   readonly bookId: number | string;
@@ -25,17 +44,50 @@ export function ReviewList({
 }: Readonly<ReviewListProps>) {
   const user = useSelector((state: RootState) => state.auth.user);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+
+  const queryClient = useQueryClient();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteReviews(bookId, initialReviews, totalReviews);
 
   const deleteReview = useDeleteReview({
-    onSuccess: () => {
-      toast.success('Review deleted');
+    onMutate: async (reviewId: number) => {
+      // Cancel outgoing refetches so they don't overwrite optimistic data
+      await queryClient.cancelQueries({ queryKey: ['reviews', String(bookId)] });
+
+      // Snapshot the previous state containing arrays of pages
+      const previousReviews = queryClient.getQueryData(['reviews', String(bookId)]);
+
+      // Optimistically update the UI by filtering out the deleted review from all pages
+      queryClient.setQueryData(
+        ['reviews', String(bookId)],
+        (old: InfiniteReviewsData | undefined) => removeReviewFromCache(old, reviewId)
+      );
+
+      return { previousReviews };
+    },
+    onSuccess: (_, reviewId, context) => {
+      toast.success('Review deleted', {
+        action: {
+          label: 'Undo',
+          onClick: () => {
+            // Revert changes if User presses Undo
+            if (context?.previousReviews) {
+              queryClient.setQueryData(['reviews', String(bookId)], context.previousReviews);
+              toast('Review restored');
+            }
+          },
+        },
+      });
       setDeletingId(null);
     },
-    onError: (error: Error) => {
-      toast.error(error.message);
+    onError: (error, __, context) => {
+      // Rollback UI update on failure
+      if (context?.previousReviews) {
+        queryClient.setQueryData(['reviews', String(bookId)], context.previousReviews);
+      }
+      toast.error(error.message || 'Failed to delete review');
       setDeletingId(null);
     },
   });
@@ -63,11 +115,26 @@ export function ReviewList({
             key={review.id}
             review={review}
             currentUserId={user?.id}
+            onEdit={setEditingReview}
             onDelete={handleDeleteReview}
             isDeleting={deletingId === review.id}
           />
         ))}
       </div>
+
+      {/* Edit Review Dialog */}
+      {editingReview && (
+        <GiveReviewDialog
+          bookId={Number(bookId)}
+          reviewId={editingReview.id}
+          open={!!editingReview}
+          onOpenChange={(isOpen) => !isOpen && setEditingReview(null)}
+          initialData={{
+            star: editingReview.star ?? editingReview.rating ?? 0,
+            comment: editingReview.comment ?? '',
+          }}
+        />
+      )}
 
       {hasNextPage && (
         <div className='mt-2 flex justify-center'>
