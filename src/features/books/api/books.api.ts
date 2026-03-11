@@ -35,7 +35,18 @@ export const getBooks = async (
     }
 
     const json = await res.json();
-    const items = json.data.books || json.data.items || [];
+    let items = json.data.books || json.data.items || [];
+
+    // Filter EXACT rating bounds locally since backend API only maps to "greater than or equal to `minRating`".
+    if (params.minRating) {
+      const targetRating = Number(params.minRating);
+      items = items.filter((book: any) => {
+        const r = book.rating ?? book.averageRating ?? 0;
+        return targetRating === 5
+          ? r === 5
+          : r >= targetRating && r < targetRating + 1;
+      });
+    }
     const pagination = json.data.pagination || {
       total: items.length,
       page: params.page || 1,

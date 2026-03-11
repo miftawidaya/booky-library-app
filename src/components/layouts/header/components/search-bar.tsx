@@ -1,20 +1,75 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { SearchMd, XClose } from '@untitledui/icons';
 import { Icon } from '@iconify/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useDebouncedCallback } from '@/hooks/use-debounce';
 
 export function SearchBar() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get('q') ?? '';
+  const [query, setQuery] = useState(initialSearch);
+
+  // Sync back when URL changes exclusively (e.g., cleared via sidebar or mobile search changing)
+  useEffect(() => {
+    setQuery(searchParams.get('q') ?? '');
+  }, [searchParams]);
+
+  const pushSearch = useCallback(
+    (val: string) => {
+      const currentParams = new URLSearchParams(searchParams.toString());
+      if (val.trim()) {
+        currentParams.set('q', val);
+      } else {
+        currentParams.delete('q');
+      }
+      router.push(`/books?${currentParams.toString()}`);
+    },
+    [searchParams, router]
+  );
+
+  const debouncedPush = useDebouncedCallback(pushSearch, 500);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setQuery(val);
+    debouncedPush(val);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    pushSearch(query);
+  };
+
+  const handleClear = () => {
+    setQuery('');
+    pushSearch('');
+  };
+
   return (
-    <div className='hidden w-full max-w-125 md:flex'>
-      <div className='border-input bg-card flex h-12 w-full items-center gap-2 rounded-full border ps-4 pe-4'>
+    <div className='relative hidden w-full max-w-125 flex-col md:flex'>
+      <form onSubmit={handleSubmit} className='border-input bg-card flex h-12 w-full items-center gap-2 rounded-full border ps-4 pe-4'>
         <SearchMd size={18} className='text-muted-foreground shrink-0' />
         <input
           type='text'
           placeholder='Search book'
-          className='text-sm-bold placeholder:text-sm-regular text-foreground placeholder:text-muted-foreground w-full bg-transparent outline-none'
+          value={query}
+          onChange={handleChange}
+          className='text-sm-bold text-foreground placeholder:text-muted-foreground w-full bg-transparent outline-none'
         />
-      </div>
+        {query.length > 0 && (
+          <button
+            type='button'
+            onClick={handleClear}
+            className='hover:text-foreground text-muted-foreground shrink-0 cursor-pointer transition-colors'
+            aria-label='Clear search'
+          >
+            <Icon icon='icon-park-solid:close-one' fontSize={16} />
+          </button>
+        )}
+      </form>
     </div>
   );
 }
@@ -22,31 +77,66 @@ export function SearchBar() {
 export function MobileSearchInput({
   onClose,
 }: Readonly<{ onClose: () => void }>) {
-  const [query, setQuery] = useState('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get('q') ?? '';
+  const [query, setQuery] = useState(initialSearch);
+
+  const pushSearch = useCallback(
+    (val: string) => {
+      const currentParams = new URLSearchParams(searchParams.toString());
+      if (val.trim()) {
+        currentParams.set('q', val);
+      } else {
+        currentParams.delete('q');
+      }
+      router.push(`/books?${currentParams.toString()}`);
+    },
+    [searchParams, router]
+  );
+
+  const debouncedPush = useDebouncedCallback(pushSearch, 500);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setQuery(val);
+    debouncedPush(val);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    pushSearch(query);
+    onClose();
+  };
+
+  const handleClear = () => {
+    setQuery('');
+    pushSearch('');
+  };
 
   return (
-    <div className='flex grow items-center gap-3 md:hidden'>
-      <div className='border-input bg-card flex h-10 grow items-center gap-2 rounded-full border px-3'>
+    <div className='flex grow items-center gap-3 md:hidden relative'>
+      <form onSubmit={handleSubmit} className='border-input bg-card flex h-10 grow items-center gap-2 rounded-full border px-3 relative'>
         <SearchMd size={16} className='text-muted-foreground shrink-0' />
         <input
           type='text'
           placeholder='Search book'
           autoFocus
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className='text-sm-bold placeholder:text-sm-regular text-foreground placeholder:text-muted-foreground w-full bg-transparent outline-none'
+          onChange={handleChange}
+          className='text-sm-bold text-foreground placeholder:text-muted-foreground w-full bg-transparent outline-none'
         />
         {query.length > 0 && (
           <button
             type='button'
-            onClick={() => setQuery('')}
-            className='hover:text-foreground text-muted-foreground shrink-0 cursor-pointer'
+            onClick={handleClear}
+            className='hover:text-foreground text-muted-foreground shrink-0 cursor-pointer transition-colors'
             aria-label='Clear search'
           >
             <Icon icon='icon-park-solid:close-one' fontSize={16} />
           </button>
         )}
-      </div>
+      </form>
       <button
         type='button'
         onClick={onClose}
