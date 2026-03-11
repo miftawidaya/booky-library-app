@@ -4,7 +4,6 @@ import '@/styles/globals.css';
 
 import { siteMetadata } from '@/config/site-metadata';
 import { Providers } from '@/app/providers';
-import { ThemeSwitcher } from '@/features/dev/ui/ThemeSwitcher';
 import { Toaster } from '@/components/ui/sonner';
 
 const quicksand = Quicksand({
@@ -24,10 +23,7 @@ export default function RootLayout({
       <body className={`${quicksand.variable} antialiased`}>
         <Providers>
           <Toaster position='top-center' richColors />
-          <div className='relative flex min-h-screen flex-col'>
-            {children}
-            <ThemeSwitcher position='center' />
-          </div>
+          <div className='relative flex min-h-screen flex-col'>{children}</div>
         </Providers>
       </body>
     </html>
