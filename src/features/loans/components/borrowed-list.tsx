@@ -31,7 +31,14 @@ export function BorrowedList() {
     useMyLoans(activeStatus, searchQuery);
 
   const loans =
-    data?.pages.flatMap((page) => page.loans ?? []).filter(Boolean) ?? [];
+    data?.pages
+      .flatMap((page) => page.loans ?? [])
+      .filter(Boolean)
+      .sort(
+        (a, b) =>
+          new Date(b.book.updatedAt).getTime() -
+          new Date(a.book.updatedAt).getTime()
+      ) ?? [];
 
   return (
     <div className='flex flex-col gap-5 md:gap-6'>

@@ -54,8 +54,8 @@ export function GiveReviewDialog({
       toast.success('Review submitted successfully');
       form.reset();
       onOpenChange(false);
-      // Navigate to the reviews section on the book details page
-      router.push(`/books/${bookId}#reviews`);
+      // Navigate to the user's review list page
+      router.push('/reviews');
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to submit review');

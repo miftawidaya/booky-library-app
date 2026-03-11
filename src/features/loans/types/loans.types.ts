@@ -25,6 +25,8 @@ export interface Loan {
     readonly reviewCount: number;
     readonly totalCopies: number;
     readonly availableCopies: number;
+    readonly createdAt: string;
+    readonly updatedAt: string;
     readonly author: {
       readonly id: number;
       readonly name: string;
