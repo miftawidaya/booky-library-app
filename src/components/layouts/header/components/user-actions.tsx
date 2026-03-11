@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { logout } from '@/features/auth/api/auth.api';
 import { clearCredentials } from '@/features/auth/store/auth.slice';
 import { toast } from 'sonner';
+import { UserAvatar } from '@/components/shared/user-avatar';
 
 import { publicRoutes } from '@/proxy';
 
@@ -56,10 +57,12 @@ export function AuthButtons() {
 export function UserMenu({
   name,
   avatarUrl,
+  userId,
   role,
 }: Readonly<{
   name: string;
   avatarUrl?: string;
+  userId?: string | number;
   role?: 'ADMIN' | 'USER';
 }>) {
   const pathname = usePathname();
@@ -117,16 +120,12 @@ export function UserMenu({
 
       <DropdownMenu>
         <DropdownMenuTrigger className='focus-visible:ring-ring group flex cursor-pointer items-center gap-3 rounded-full transition-all hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none data-[state=open]:opacity-80'>
-          <Avatar className='border-border/50 size-10 border shadow-sm'>
-            <AvatarImage
-              src={avatarUrl ?? undefined}
-              alt={safeName}
-              className='object-cover'
-            />
-            <AvatarFallback className='bg-primary/10 text-primary font-bold'>
-              {safeName.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            name={safeName}
+            photo={avatarUrl}
+            userId={userId}
+            className='border-border/50 size-10 border shadow-sm'
+          />
           <div className='hidden items-center gap-2 md:flex'>
             <span className='text-md-medium text-foreground tracking-tight'>
               {safeName}

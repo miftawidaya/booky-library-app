@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react';
 import dayjs from 'dayjs';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { UserAvatar } from '@/components/shared/user-avatar';
 import type { Review } from '../types/reviews.types';
 
 interface ReviewCardProps {
@@ -38,25 +39,11 @@ export function ReviewCard({
       <div className='flex items-start justify-between gap-3'>
         <div className='flex items-center gap-3 md:items-start'>
           {/* Avatar */}
-          <div className='bg-secondary relative size-10 shrink-0 overflow-hidden rounded-full md:size-12'>
-            {review.user?.photo ? (
-              <Image
-                src={review.user.photo}
-                alt={review.user.name ?? 'User'}
-                fill
-                unoptimized
-                sizes='(max-width: 768px) 40px, 48px'
-                className='object-cover'
-              />
-            ) : (
-              <div className='bg-secondary flex size-full items-center justify-center'>
-                <Icon
-                  icon='ri:user-line'
-                  className='text-muted-foreground size-5'
-                />
-              </div>
-            )}
-          </div>
+          <UserAvatar 
+            name={review.user?.name} 
+            photo={review.user?.photo} 
+            userId={review.userId}
+          />
 
           {/* Info: Name + Date */}
           <div className='flex flex-col'>

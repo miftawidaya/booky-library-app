@@ -91,6 +91,7 @@ export function Header({ className }: Readonly<{ className?: string }>) {
             <UserMenu
               name={user.name}
               avatarUrl={user.profilePhoto ?? undefined}
+              userId={user.id}
               role={user.role}
             />
           ) : (
