@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Category } from '../types/home.types';
 import { getCategoryIcon } from '../constants/category.constants';
+import { paths } from '@/config/routes';
 
 export function CategorySection({
   categories,
@@ -14,7 +15,7 @@ export function CategorySection({
         {displayCategories.map((category) => (
           <Link
             key={category.id}
-            href={`/books?category=${category.id}`}
+            href={`${paths.public.books}?category=${category.id}`}
             className='bg-card shadow-card dark:border-border flex cursor-pointer flex-col items-start justify-center gap-3 rounded-2xl p-2 transition-transform hover:-translate-y-1 hover:shadow-lg md:p-3 dark:border dark:shadow-none'
           >
             <div className='bg-accent flex h-14 w-full shrink-0 items-center justify-center overflow-hidden rounded-xl md:h-16'>

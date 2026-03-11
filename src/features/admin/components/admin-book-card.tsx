@@ -1,7 +1,10 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { Icon } from '@iconify/react';
+
+import { paths } from '@/config/routes';
 
 import { Button } from '@/components/ui/button';
 import { Book } from '@/features/home/types/home.types';
@@ -39,9 +42,12 @@ export function AdminBookCard({ book }: AdminBookCardProps) {
         <div className='flex min-w-0 flex-1 flex-col items-start gap-1'>
           {/* Category Badge */}
           {book.category && (
-            <div className='border-border text-foreground text-sm-bold flex h-7 items-center justify-center rounded-md border px-2'>
+            <Link
+              href={`${paths.public.books}?category=${book.category.id}`}
+              className='border-border text-foreground text-sm-bold hover:bg-primary/10 hover:text-primary hover:border-primary/30 flex h-7 items-center justify-center rounded-md border px-2 transition-colors'
+            >
               {book.category.name}
-            </div>
+            </Link>
           )}
 
           {/* Title */}

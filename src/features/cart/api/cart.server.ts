@@ -11,7 +11,8 @@ interface ServerCartItem {
     readonly coverImage: string | null;
     readonly author?: { readonly name: string } | null;
     readonly authorName?: string;
-    readonly category?: { readonly name: string } | null;
+    readonly category?: { readonly id: number; readonly name: string } | null;
+    readonly categoryId?: number;
     readonly categoryName?: string;
   };
 }
@@ -53,6 +54,7 @@ export async function getServerCart(): Promise<CartItem[]> {
       title: item.book.title,
       authorName:
         item.book.author?.name ?? item.book.authorName ?? 'Unknown Author',
+      categoryId: item.book.category?.id ?? item.book.categoryId ?? null,
       categoryName:
         item.book.category?.name ?? item.book.categoryName ?? 'General',
       coverImage: item.book.coverImage,

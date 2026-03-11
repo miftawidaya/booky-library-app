@@ -3,6 +3,7 @@ import Image from 'next/image';
 import dayjs from 'dayjs';
 import { Icon } from '@iconify/react';
 import type { Review } from '../../types/reviews.types';
+import { paths } from '@/config/routes';
 
 interface UserReviewCardProps {
   readonly review: Review;
@@ -103,7 +104,7 @@ export function UserReviewCard({
             {/* Category Tag */}
             {review.book?.category && (
               <Link
-                href={`/books?category=${review.book.category.id}`}
+                href={`${paths.public.books}?category=${review.book.category.id}`}
                 className='border-border text-foreground text-sm-bold hover:bg-muted flex h-7 items-center justify-center rounded-md border px-2'
               >
                 {review.book.category.name}

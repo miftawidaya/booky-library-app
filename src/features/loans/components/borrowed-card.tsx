@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import dayjs from 'dayjs';
 
+import { paths } from '@/config/routes';
+
 import { Button } from '@/components/ui/button';
 import { GiveReviewDialog } from '@/features/reviews/components/give-review-dialog';
 import { useReturnLoan } from '@/features/loans/api/loans.mutations';
@@ -98,7 +100,7 @@ export function BorrowedCard({ loan }: BorrowedCardProps) {
           <div className='flex min-w-0 flex-1 flex-col gap-1'>
             {loan.book.category && (
               <Link
-                href={`/books?category=${loan.book.category.id}`}
+                href={`${paths.public.books}?category=${loan.book.category.id}`}
                 className='border-border text-foreground flex h-7 w-fit items-center rounded-sm border ps-2 pe-2 text-sm font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900'
               >
                 {loan.book.category.name}

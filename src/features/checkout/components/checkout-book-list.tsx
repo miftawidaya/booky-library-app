@@ -23,6 +23,7 @@ export function CheckoutBookList({ items }: CheckoutBookListProps) {
               bookId={item.bookId}
               title={item.title}
               authorName={item.authorName}
+              categoryId={item.categoryId}
               categoryName={item.categoryName}
               coverImage={item.coverImage}
             />

@@ -7,7 +7,7 @@ import type { CartItem } from '../types/cart.types';
 interface PartiallyCachedBook {
   title?: string;
   author?: { name: string };
-  category?: { name: string };
+  category?: { id: number; name: string };
   coverImage?: string | null;
 }
 
@@ -33,6 +33,7 @@ export function useAddToCart() {
           bookId,
           title: cachedBook?.title || 'Book added...',
           authorName: cachedBook?.author?.name || 'Adding...',
+          categoryId: cachedBook?.category?.id ?? null,
           categoryName: cachedBook?.category?.name || 'Adding...',
           coverImage: cachedBook?.coverImage || null,
           selected: false,

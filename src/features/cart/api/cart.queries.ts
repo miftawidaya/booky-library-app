@@ -13,6 +13,10 @@ function mapServerItemToCartItem(serverItem: ServerCartItem): CartItem {
       serverItem.book.author?.name ||
       serverItem.book.authorName ||
       'Unknown Author',
+    categoryId:
+      serverItem.book.category?.id ??
+      serverItem.book.categoryId ??
+      null,
     categoryName:
       serverItem.book.category?.name ||
       serverItem.book.categoryName ||

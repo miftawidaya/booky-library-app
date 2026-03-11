@@ -7,6 +7,7 @@ import { ReviewList } from '@/features/reviews/components/review-list';
 import { BookCard } from '@/components/shared/book-card';
 import { BookActionButtons } from '@/features/cart/components/book-action-buttons';
 import { Book } from '@/features/home/types/home.types';
+import { paths } from '@/config/routes';
 
 export default async function BookDetailPage({
   params,
@@ -40,7 +41,7 @@ export default async function BookDetailPage({
       <div className='custom-container pt-8 md:pt-10'>
         <nav className='flex items-center gap-1'>
           <Link
-            href='/'
+            href={paths.public.home}
             className='text-primary text-sm font-semibold hover:underline'
           >
             Home
@@ -51,7 +52,9 @@ export default async function BookDetailPage({
           />
           <Link
             href={
-              book.categoryId ? `/books?category=${book.categoryId}` : '/books'
+              book.categoryId
+                ? `${paths.public.books}?category=${book.categoryId}`
+                : paths.public.books
             }
             className='text-primary text-sm font-semibold hover:underline'
           >
@@ -95,9 +98,16 @@ export default async function BookDetailPage({
         <div className='flex flex-1 flex-col justify-start md:px-0'>
           {/* Metadata Badges */}
           <div className='mb-3 flex items-center'>
-            <span className='border-border text-foreground rounded-full border px-3 py-1 text-sm font-semibold'>
+            <Link
+              href={
+                book.categoryId
+                  ? `${paths.public.books}?category=${book.categoryId}`
+                  : paths.public.books
+              }
+              className='border-border text-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 text-sm-bold rounded-sm border px-3 py-1 text-sm transition-colors'
+            >
               {book.category?.name || 'Uncategorized'}
-            </span>
+            </Link>
           </div>
 
           <div className='flex flex-col gap-2'>
