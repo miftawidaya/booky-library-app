@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { SiteConfig } from '@/types';
+import { APP_URL, GSC_VERIFICATION } from '@/config/env';
 
 // Core Application Configuration
 export const siteConfig: SiteConfig = {
@@ -7,8 +8,8 @@ export const siteConfig: SiteConfig = {
   tagline: 'Open Source Next.js Library & Book Borrowing Template',
   description:
     'A high-performance open-source library management and book borrowing template. Built with Next.js 16 and Tailwind CSS v4.',
-  url: process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
-  ogImage: `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/og-image.jpg`,
+  url: APP_URL,
+  ogImage: `${APP_URL}/og-image.jpg`,
   author: {
     name: 'miftawidaya',
     url: 'https://github.com/miftawidaya',
@@ -87,7 +88,7 @@ export const createMetadata = (override?: Partial<Metadata>): Metadata => {
       },
     },
     verification: {
-      google: process.env.NEXT_PUBLIC_GSC_VERIFICATION,
+      google: GSC_VERIFICATION,
     },
     ...override,
   };

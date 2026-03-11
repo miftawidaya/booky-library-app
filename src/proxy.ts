@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { adminRoutes, publicRoutes } from '@/config/routes';
+import { adminRoutes, paths, publicRoutes } from '@/config/routes';
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -24,26 +24,26 @@ export async function proxy(request: NextRequest) {
   // Unauthenticated users hitting protected routes
   // Guard Logic: No token + accessing protected/admin route -> Redirect to /login?redirect=[pathname]
   if (!isPublicRoute && !token) {
-    const loginUrl = new URL('/login', request.url);
+    const loginUrl = new URL(paths.auth.login, request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // Authenticated users accessing /login or /register
   // Guard Logic: Has token + accessing /login or /register -> Redirect to redirect URL or role-based default
-  if (token && (pathname === '/login' || pathname === '/register')) {
+  if (token && (pathname === paths.auth.login || pathname === paths.auth.register)) {
     const redirectUrl = request.nextUrl.searchParams.get('redirect');
     if (redirectUrl && redirectUrl !== '/') {
       return NextResponse.redirect(new URL(redirectUrl, request.url));
     }
-    const defaultDirect = userRole === 'ADMIN' ? '/admin' : '/';
+    const defaultDirect = userRole === 'ADMIN' ? paths.admin.dashboard : paths.public.home;
     return NextResponse.redirect(new URL(defaultDirect, request.url));
   }
 
   // Admin routes protection
   // Guard Logic: Has token + wrong role for admin -> Redirect to /profile
   if (isAdminRoute && userRole !== 'ADMIN') {
-    return NextResponse.redirect(new URL('/profile', request.url));
+    return NextResponse.redirect(new URL(paths.user.profile, request.url));
   }
 
   return NextResponse.next();

@@ -12,6 +12,7 @@ import { CheckoutBorrowForm } from '@/features/checkout/components/checkout-borr
 import type { RootState } from '@/lib/store';
 import type { BorrowDuration } from '@/features/checkout/types/checkout.types';
 import { toast } from 'sonner';
+import { paths } from '@/config/routes';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function CheckoutPage() {
         </p>
         <button
           type='button'
-          onClick={() => router.push('/cart')}
+          onClick={() => router.push(paths.user.cart)}
           className='text-primary hover:text-primary/80 text-md font-bold underline transition-colors'
         >
           Go to Cart
@@ -96,7 +97,7 @@ export default function CheckoutPage() {
       if (loanId) successParams.set('loanId', String(loanId));
       successParams.set('dueDate', dueDate);
 
-      router.push(`/checkout/success?${successParams.toString()}`);
+      router.push(`${paths.user.checkoutSuccess}?${successParams.toString()}`);
     } catch (error) {
       const message =
         error instanceof Error

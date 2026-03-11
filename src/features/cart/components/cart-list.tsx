@@ -16,6 +16,7 @@ import {
 } from '../store';
 import type { CartItem } from '@/features/cart/types/cart.types';
 import { toast } from 'sonner';
+import { paths } from '@/config/routes';
 
 interface CartListProps {
   readonly initialServerItems?: readonly CartItem[]; // Kept for backwards compatibility but handled differently
@@ -70,7 +71,7 @@ export function CartList({ initialServerItems }: CartListProps) {
       toast.warning('Please select at least one book to borrow');
       return;
     }
-    router.push('/checkout');
+    router.push(paths.user.checkout);
   };
 
   if (items.length === 0) {

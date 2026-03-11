@@ -4,6 +4,8 @@ import * as React from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
+import { paths } from '@/config/routes';
+
 import { useRegisterForm } from '../../hooks/useRegisterForm';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -195,7 +197,7 @@ export function RegisterForm() {
             Already have an account?
           </span>
           <Link
-            href='/login'
+            href={paths.auth.login}
             className='text-primary hover:text-primary-400 text-sm font-bold tracking-tight transition-colors md:text-base'
           >
             Log In

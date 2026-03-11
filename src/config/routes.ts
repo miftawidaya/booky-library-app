@@ -1,76 +1,89 @@
 /**
  * Centralized route definitions used by middleware (proxy),
- * sitemap generation, and robots.txt.
+ * sitemap generation, robots.txt, and navigation.
  *
- * Routes that need authentication or admin access are kept separate
- * so each consumer can pick the subset it needs.
+ * `paths` is the single source of truth. All flat arrays
+ * (publicRoutes, adminRoutes, etc.) are derived from it.
  */
 
 /**
- * Auth-related routes (login, register).
- * Public but excluded from sitemap since they have no indexable content.
+ * Grouped path constants by domain.
+ * Use these throughout the app instead of hardcoded route strings.
+ *
+ * @example
+ * paths.auth.login      // '/login'
+ * paths.user.cart        // '/cart'
+ * paths.admin.loans      // '/admin/loans'
+ * paths.public.books     // '/books'
  */
-export const authRoutes = ['/login', '/register'] as const;
+export const paths = {
+  public: {
+    home: '/',
+    books: '/books',
+    authors: '/authors',
+    search: '/search',
+  },
+  auth: {
+    login: '/login',
+    register: '/register',
+  },
+  user: {
+    profile: '/profile',
+    borrowed: '/borrowed',
+    reviews: '/reviews',
+    cart: '/cart',
+    checkout: '/checkout',
+    checkoutSuccess: '/checkout/success',
+  },
+  admin: {
+    dashboard: '/admin',
+    loans: '/admin/loans',
+    loansNew: '/admin/loans/new',
+    users: '/admin/users',
+    books: '/admin/books',
+    booksNew: '/admin/books/new',
+    authors: '/admin/authors',
+    categories: '/admin/categories',
+  },
+} as const;
 
 /**
  * Public routes accessible without authentication.
- * Includes auth routes for middleware compatibility.
+ * Derived from paths.public and paths.auth.
  */
 export const publicRoutes: readonly string[] = [
-  '/',
-  ...authRoutes,
-  '/books',
-  '/authors',
-  '/search',
+  ...Object.values(paths.public),
+  ...Object.values(paths.auth),
 ];
 
 /**
  * Subset of public routes that should appear in the sitemap.
  * Excludes auth routes since they have no indexable content.
  */
+const authValues = Object.values(paths.auth) as readonly string[];
 export const sitemapRoutes = publicRoutes.filter(
-  (route) => !(authRoutes as readonly string[]).includes(route),
+  (route) => !authValues.includes(route),
 );
 
 /**
  * Admin-only routes requiring ADMIN role.
+ * Derived from paths.admin.
  */
-export const adminRoutes = [
-  '/admin',
-  '/admin/books',
-  '/admin/books/new',
-  '/admin/users',
-  '/admin/authors',
-  '/admin/categories',
-  '/admin/loans',
-  '/admin/loans/new',
-] as const;
+export const adminRoutes: readonly string[] = Object.values(paths.admin);
 
 /**
  * User-only routes requiring authentication (non-admin).
+ * Derived from paths.user.
  */
-export const userRoutes = [
-  '/borrowed',
-  '/profile',
-  '/reviews',
-] as const;
-
-/**
- * Transactional routes requiring authentication.
- */
-export const transactionalRoutes = [
-  '/cart',
-  '/checkout',
-] as const;
+export const userRoutes: readonly string[] = Object.values(paths.user);
 
 /**
  * All routes that should be disallowed in robots.txt.
- * Combines admin, user, transactional, auth routes and API paths.
+ * Combines admin, user, auth routes and API paths.
  */
 export const robotsDisallowedPaths: readonly string[] = [
   '/admin/',
   '/api/',
-  ...userRoutes.map((route) => `${route}/`),
-  ...transactionalRoutes.map((route) => `${route}/`),
-  ...authRoutes.map((route) => `${route}/`),
+  ...Object.values(paths.user).map((route) => `${route}/`),
+  ...Object.values(paths.auth).map((route) => `${route}/`),
 ];

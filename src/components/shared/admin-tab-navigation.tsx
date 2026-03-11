@@ -3,11 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const ADMIN_TABS = [
-  { label: 'Borrowed List', href: '/admin/loans' },
-  { label: 'User', href: '/admin/users' },
-  { label: 'Book List', href: '/admin/books' },
-] as const;
+import { adminTabItems } from '@/config/navigation';
+
+
 
 /**
  * Tab navigation for admin management pages (Borrowed List, User, Book List).
@@ -17,7 +15,7 @@ export function AdminTabNavigation() {
 
   return (
     <nav className='bg-secondary flex items-center gap-2 rounded-2xl p-2 md:w-139.25'>
-      {ADMIN_TABS.map((tab) => {
+      {adminTabItems.map((tab) => {
         const isActive =
           pathname === tab.href || pathname.startsWith(tab.href + '/');
         return (

@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { paths } from '@/config/routes';
+
 import { useAppSelector, useAppDispatch } from '@/lib/hooks-redux';
 import { selectIsAuthenticated, selectUser, setCredentials } from '../store';
 import { useLogin } from '../queries/auth.queries';
@@ -27,7 +29,7 @@ export function useLoginForm() {
       if (redirectUrl && redirectUrl !== '/') {
         router.replace(redirectUrl);
       } else {
-        router.replace(user.role === 'ADMIN' ? '/admin' : '/');
+        router.replace(user.role === 'ADMIN' ? paths.admin.dashboard : paths.public.home);
       }
     }
   }, [isAuthenticated, user, router, redirectUrl]);
@@ -49,7 +51,7 @@ export function useLoginForm() {
           if (redirectUrl && redirectUrl !== '/') {
             router.push(redirectUrl);
           } else {
-            router.push(data.data.user.role === 'ADMIN' ? '/admin' : '/');
+            router.push(data.data.user.role === 'ADMIN' ? paths.admin.dashboard : paths.public.home);
           }
         } else {
           setErrorMsg(data.message || 'Login failed');

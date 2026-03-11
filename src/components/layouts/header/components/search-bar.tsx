@@ -5,6 +5,7 @@ import { SearchMd, XClose } from '@untitledui/icons';
 import { Icon } from '@iconify/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDebouncedCallback } from '@/hooks/use-debounce';
+import { paths } from '@/config/routes';
 
 export function SearchBar() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export function SearchBar() {
       } else {
         currentParams.delete('q');
       }
-      router.push(`/books?${currentParams.toString()}`);
+      router.push(`${paths.public.books}?${currentParams.toString()}`);
     },
     [searchParams, router]
   );
@@ -90,7 +91,7 @@ export function MobileSearchInput({
       } else {
         currentParams.delete('q');
       }
-      router.push(`/books?${currentParams.toString()}`);
+      router.push(`${paths.public.books}?${currentParams.toString()}`);
     },
     [searchParams, router]
   );

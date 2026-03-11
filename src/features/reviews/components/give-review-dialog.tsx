@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { Icon } from '@iconify/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { paths } from '@/config/routes';
 
 import {
   Dialog,
@@ -68,7 +69,7 @@ export function GiveReviewDialog({
       );
       form.reset();
       onOpenChange(false);
-      router.push('/reviews');
+      router.push(paths.user.reviews);
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to submit review');

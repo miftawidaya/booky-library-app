@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { paths } from '@/config/routes';
 import { Header } from '@/components/layouts/header';
 import { Footer } from '@/components/layouts/footer/footer';
 import { AdminTabNavigation } from '@/components/shared/admin-tab-navigation';
@@ -14,7 +15,7 @@ export default async function AdminLayout({
   const userRole = cookieStore.get('userRole')?.value;
 
   if (!token || userRole !== 'ADMIN') {
-    redirect('/profile');
+    redirect(paths.user.profile);
   }
 
   return (

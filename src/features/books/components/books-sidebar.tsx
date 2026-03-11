@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useCallback } from 'react';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
+import { paths } from '@/config/routes';
 
 export function BooksSidebar({
   categories,
@@ -24,7 +25,7 @@ export function BooksSidebar({
       } else {
         params.delete(key);
       }
-      router.push(`/books?${params.toString()}`);
+      router.push(`${paths.public.books}?${params.toString()}`);
     },
     [router, searchParams]
   );

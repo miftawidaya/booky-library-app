@@ -9,6 +9,7 @@ import { useAddToCart } from '@/features/cart/api/cart.mutations';
 import { setSelections } from '@/features/cart/store';
 import { toast } from 'sonner';
 import type { RootState } from '@/lib/store';
+import { paths } from '@/config/routes';
 
 interface BookActionButtonsProps {
   readonly bookId: number;
@@ -37,7 +38,7 @@ export function BookActionButtons({
     if (!user) {
       toast.error('Please login to add items to your cart');
       const redirectUrl = encodeURIComponent(`${pathname}?autoAdd=true`);
-      router.push(`/login?redirect=${redirectUrl}`);
+      router.push(`${paths.auth.login}?redirect=${redirectUrl}`);
       return;
     }
 
@@ -53,7 +54,7 @@ export function BookActionButtons({
     if (!user) {
       toast.error('Please login to borrow books');
       const redirectUrl = encodeURIComponent(`${pathname}?autoBorrow=true`);
-      router.push(`/login?redirect=${redirectUrl}`);
+      router.push(`${paths.auth.login}?redirect=${redirectUrl}`);
       return;
     }
 
@@ -67,7 +68,7 @@ export function BookActionButtons({
 
     // Set ONLY this item as selected for checkout
     dispatch(setSelections([Number(bookId)]));
-    router.push('/checkout');
+    router.push(paths.user.checkout);
   };
 
   // Auto-resume action after successful login redirect
@@ -98,7 +99,7 @@ export function BookActionButtons({
           variant={isInCart ? 'default' : 'outline'}
           size='lg'
           className={`h-12 w-40 rounded-full font-bold ${isInCart ? 'bg-primary/10 text-primary hover:bg-primary/20' : ''}`}
-          onClick={isInCart ? () => router.push('/cart') : handleAddToCart}
+          onClick={isInCart ? () => router.push(paths.user.cart) : handleAddToCart}
           disabled={!isInCart && availableCopies <= 0}
         >
           {isInCart ? 'Go to Cart' : 'Add to Cart'}
@@ -119,7 +120,7 @@ export function BookActionButtons({
           <Button
             variant={isInCart ? 'default' : 'outline'}
             className={`border-border h-10 grow rounded-full text-sm font-bold ${isInCart ? 'bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary' : 'text-foreground'}`}
-            onClick={isInCart ? () => router.push('/cart') : handleAddToCart}
+            onClick={isInCart ? () => router.push(paths.user.cart) : handleAddToCart}
             disabled={!isInCart && availableCopies <= 0}
           >
             {isInCart ? 'Go to Cart' : 'Add to Cart'}

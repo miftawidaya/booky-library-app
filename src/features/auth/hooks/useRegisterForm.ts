@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { paths } from '@/config/routes';
+
 import { useAppSelector, useAppDispatch } from '@/lib/hooks-redux';
 import { selectIsAuthenticated, selectUser, setCredentials } from '../store';
 import { useRegister, useLogin } from '../queries/auth.queries';
@@ -31,7 +33,7 @@ export function useRegisterForm() {
       if (redirectUrl && redirectUrl !== '/') {
         router.replace(redirectUrl);
       } else {
-        router.replace(user.role === 'ADMIN' ? '/admin' : '/');
+        router.replace(user.role === 'ADMIN' ? paths.admin.dashboard : paths.public.home);
       }
     }
   }, [isAuthenticated, user, router, redirectUrl]);
@@ -62,18 +64,18 @@ export function useRegisterForm() {
                   if (redirectUrl && redirectUrl !== '/') {
                     router.push(redirectUrl);
                   } else {
-                    router.push(loginData.data.user.role === 'ADMIN' ? '/admin' : '/');
+                    router.push(loginData.data.user.role === 'ADMIN' ? paths.admin.dashboard : paths.public.home);
                   }
                 } else {
                   // Fallback if auto-login fails
                   const redirectQueryString = redirectUrl ? `&redirect=${encodeURIComponent(redirectUrl)}` : '';
-                  router.push(`/login?registered=true${redirectQueryString}`);
+                  router.push(`${paths.auth.login}?registered=true${redirectQueryString}`);
                 }
               },
               onError: () => {
                 // Fallback to manual login route on error
                 const redirectQueryString = redirectUrl ? `&redirect=${encodeURIComponent(redirectUrl)}` : '';
-                router.push(`/login?registered=true${redirectQueryString}`);
+                router.push(`${paths.auth.login}?registered=true${redirectQueryString}`);
               },
             }
           );

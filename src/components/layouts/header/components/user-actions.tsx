@@ -22,22 +22,8 @@ import { clearCredentials } from '@/features/auth/store/auth.slice';
 import { toast } from 'sonner';
 import { UserAvatar } from '@/components/shared/user-avatar';
 
-import { publicRoutes } from '@/config/routes';
-
-const USER_MENU_ITEMS = [
-  {
-    label: 'Profile',
-    href: '/profile',
-  },
-  {
-    label: 'Borrowed List',
-    href: '/borrowed',
-  },
-  {
-    label: 'Reviews',
-    href: '/reviews',
-  },
-];
+import { paths, publicRoutes } from '@/config/routes';
+import { userMenuItems } from '@/config/navigation';
 
 export function AuthButtons() {
   const pathname = usePathname();
@@ -88,7 +74,7 @@ export function UserMenu({
       if (isPublicRoute) {
         router.refresh();
       } else {
-        router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+        router.push(`${paths.auth.login}?redirect=${encodeURIComponent(pathname)}`);
       }
 
       toast.success('You have been logged out successfully.');
@@ -100,7 +86,7 @@ export function UserMenu({
   return (
     <div className='flex items-center gap-4 md:gap-5'>
       <Link
-        href='/cart'
+        href={paths.user.cart}
         className='focus-visible:ring-ring relative flex size-10 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
         aria-label='Cart'
       >
@@ -145,7 +131,7 @@ export function UserMenu({
             <DropdownMenuSeparator />
           </div>
 
-          {USER_MENU_ITEMS.map((item) => (
+          {userMenuItems.map((item) => (
             <DropdownMenuItem
               key={item.label}
               asChild
@@ -161,7 +147,7 @@ export function UserMenu({
                 asChild
                 className='hover:bg-muted focus:bg-muted cursor-pointer rounded-lg p-2 text-sm font-medium'
               >
-                <Link href='/admin/loans'>Admin Panel</Link>
+                <Link href={paths.admin.loans}>Admin Panel</Link>
               </DropdownMenuItem>
             </>
           )}
