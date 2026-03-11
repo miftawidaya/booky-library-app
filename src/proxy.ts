@@ -1,32 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-/**
- * Public routes accessible without authentication.
- */
-export const publicRoutes = [
-  '/',
-  '/login',
-  '/register',
-  '/books',
-  '/authors',
-  '/categories',
-  '/search',
-];
-
-/**
- * Admin-only routes requiring ADMIN role.
- */
-const adminRoutes = [
-  '/admin',
-  '/admin/books',
-  '/admin/books/new',
-  '/admin/users',
-  '/admin/authors',
-  '/admin/categories',
-  '/admin/loans',
-  '/admin/loans/new',
-];
+import { adminRoutes, publicRoutes } from '@/config/routes';
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

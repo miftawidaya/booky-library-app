@@ -22,7 +22,7 @@ import { clearCredentials } from '@/features/auth/store/auth.slice';
 import { toast } from 'sonner';
 import { UserAvatar } from '@/components/shared/user-avatar';
 
-import { publicRoutes } from '@/proxy';
+import { publicRoutes } from '@/config/routes';
 
 const USER_MENU_ITEMS = [
   {
