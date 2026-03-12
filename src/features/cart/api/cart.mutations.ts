@@ -6,7 +6,7 @@ import type { CartItem } from '../types/cart.types';
 // We define a loose Book type strictly for picking cache data during optimistic updates
 interface PartiallyCachedBook {
   title?: string;
-  author?: { name: string };
+  author?: { id: number; name: string };
   category?: { id: number; name: string };
   coverImage?: string | null;
 }
@@ -32,6 +32,7 @@ export function useAddToCart() {
         const optimisticItem: CartItem = {
           bookId,
           title: cachedBook?.title || 'Book added...',
+          authorId: cachedBook?.author?.id ?? null,
           authorName: cachedBook?.author?.name || 'Adding...',
           categoryId: cachedBook?.category?.id ?? null,
           categoryName: cachedBook?.category?.name || 'Adding...',

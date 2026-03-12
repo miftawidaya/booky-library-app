@@ -10,7 +10,8 @@ interface ServerCartItem {
     readonly id: number;
     readonly title: string;
     readonly coverImage: string | null;
-    readonly author?: { readonly name: string } | null;
+    readonly author?: { readonly id: number; readonly name: string } | null;
+    readonly authorId?: number;
     readonly authorName?: string;
     readonly category?: { readonly id: number; readonly name: string } | null;
     readonly categoryId?: number;

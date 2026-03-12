@@ -33,6 +33,7 @@ export function CartItemCard({
         <BookListItem
           bookId={item.bookId}
           title={item.title}
+          authorId={item.authorId}
           authorName={item.authorName}
           categoryId={item.categoryId}
           categoryName={item.categoryName}

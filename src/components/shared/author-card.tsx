@@ -1,10 +1,15 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { PopularAuthor } from '@/features/home/types/home.types';
 import { BookIcon } from '@/components/ui/icons/book';
+import { paths } from '@/config/routes';
 
 export function AuthorCard({ author }: Readonly<{ author: PopularAuthor }>) {
   return (
-    <div className='bg-card shadow-card group hover:border-border dark:border-border flex cursor-pointer items-center gap-3 rounded-xl border border-transparent p-3 transition-colors md:gap-4 md:p-4 dark:border dark:shadow-none'>
+    <Link
+      href={`${paths.public.authors}/${author.id}`}
+      className='bg-card shadow-card group hover:border-border dark:border-border flex cursor-pointer items-center gap-3 rounded-xl border border-transparent p-3 transition-colors md:gap-4 md:p-4 dark:border dark:shadow-none'
+    >
       {/* Avatar Area */}
       <div className='bg-muted relative size-15 shrink-0 overflow-hidden rounded-full md:size-20'>
         {author.photo ? (
@@ -35,6 +40,6 @@ export function AuthorCard({ author }: Readonly<{ author: PopularAuthor }>) {
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

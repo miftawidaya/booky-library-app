@@ -122,11 +122,22 @@ export function UserReviewCard({
             </Link>
 
             {/* Author */}
-            <p className='text-muted-foreground text-sm-medium md:text-md-medium'>
-              {review.book?.author?.name ??
-                review.book?.authors?.[0]?.name ??
-                'Unknown Author'}
-            </p>
+            {review.book?.author?.id || review.book?.authors?.[0]?.id ? (
+              <Link
+                href={`${paths.public.authors}/${review.book?.author?.id || review.book?.authors?.[0]?.id}`}
+                className='text-muted-foreground text-sm-medium md:text-md-medium hover:text-primary transition-colors'
+              >
+                {review.book?.author?.name ||
+                  review.book?.authors?.[0]?.name ||
+                  'Unknown Author'}
+              </Link>
+            ) : (
+              <p className='text-muted-foreground text-sm-medium md:text-md-medium'>
+                {review.book?.author?.name ||
+                  review.book?.authors?.[0]?.name ||
+                  'Unknown Author'}
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -9,7 +9,8 @@ interface ServerCartItem {
     readonly id: number;
     readonly title: string;
     readonly coverImage: string | null;
-    readonly author?: { readonly name: string } | null;
+    readonly author?: { readonly id: number; readonly name: string } | null;
+    readonly authorId?: number;
     readonly authorName?: string;
     readonly category?: { readonly id: number; readonly name: string } | null;
     readonly categoryId?: number;
@@ -52,6 +53,7 @@ export async function getServerCart(): Promise<CartItem[]> {
     return items.map((item) => ({
       bookId: item.bookId,
       title: item.book.title,
+      authorId: item.book.author?.id ?? item.book.authorId ?? null,
       authorName:
         item.book.author?.name ?? item.book.authorName ?? 'Unknown Author',
       categoryId: item.book.category?.id ?? item.book.categoryId ?? null,

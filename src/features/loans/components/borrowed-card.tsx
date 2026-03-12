@@ -111,9 +111,12 @@ export function BorrowedCard({ loan }: BorrowedCardProps) {
                 {loan.book.title}
               </h3>
             </Link>
-            <p className='text-muted-foreground md:text-md truncate text-sm font-medium md:font-medium'>
+            <Link
+              href={`${paths.public.authors}/${loan.book.author.id}`}
+              className='text-muted-foreground md:text-md hover:text-primary truncate text-sm font-medium transition-colors md:font-medium'
+            >
               {loan.book.author.name}
-            </p>
+            </Link>
             <div 
               className='text-foreground md:text-md flex items-center gap-2 pt-1 text-sm font-bold md:font-bold'
               suppressHydrationWarning

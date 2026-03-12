@@ -9,6 +9,7 @@ function mapServerItemToCartItem(serverItem: ServerCartItem): CartItem {
   return {
     bookId: serverItem.bookId,
     title: serverItem.book.title,
+    authorId: serverItem.book.author?.id ?? serverItem.book.authorId ?? null,
     authorName:
       serverItem.book.author?.name ||
       serverItem.book.authorName ||

@@ -1,6 +1,7 @@
 export interface CartItem {
   readonly bookId: number;
   readonly title: string;
+  readonly authorId: number | null;
   readonly authorName: string;
   readonly categoryId: number | null;
   readonly categoryName: string;

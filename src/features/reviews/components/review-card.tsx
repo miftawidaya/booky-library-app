@@ -2,7 +2,6 @@
 
 import { Icon } from '@iconify/react';
 import dayjs from 'dayjs';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/shared/user-avatar';
 import type { Review } from '../types/reviews.types';
@@ -39,9 +38,9 @@ export function ReviewCard({
       <div className='flex items-start justify-between gap-3'>
         <div className='flex items-center gap-3 md:items-start'>
           {/* Avatar */}
-          <UserAvatar 
-            name={review.user?.name} 
-            photo={review.user?.photo} 
+          <UserAvatar
+            name={review.user?.name}
+            photo={review.user?.photo}
             userId={review.userId}
           />
 
@@ -50,7 +49,7 @@ export function ReviewCard({
             <span className='md:text-md text-foreground text-sm font-extrabold'>
               {review.user?.name ?? 'Anonymous'}
             </span>
-            <span 
+            <span
               className='text-foreground text-xs font-normal tracking-tight md:text-sm'
               suppressHydrationWarning
             >

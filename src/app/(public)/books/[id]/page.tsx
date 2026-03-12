@@ -114,9 +114,18 @@ export default async function BookDetailPage({
             <h1 className='text-display-sm md:text-display-lg text-foreground leading-tight font-extrabold'>
               {book.title}
             </h1>
-            <p className='text-muted-foreground text-lg font-medium'>
-              {book.author?.name || book.authorName || 'Unknown Author'}
-            </p>
+            {book.authorId ? (
+              <Link
+                href={`${paths.public.authors}/${book.authorId}`}
+                className='text-muted-foreground hover:text-primary text-lg font-medium transition-colors'
+              >
+                {book.author?.name || book.authorName}
+              </Link>
+            ) : (
+              <p className='text-muted-foreground text-lg font-medium'>
+                {book.author?.name || book.authorName || 'Unknown Author'}
+              </p>
+            )}
             <div className='mt-1 flex items-center gap-1.5'>
               <Icon icon='ri:star-fill' className='text-rating size-5' />
               <span className='text-foreground text-lg font-bold'>

@@ -9,6 +9,7 @@ import { paths } from '@/config/routes';
 interface BookListItemProps {
   readonly bookId: number;
   readonly title: string;
+  readonly authorId: number | null;
   readonly authorName: string;
   readonly categoryId: number | null;
   readonly categoryName: string;
@@ -19,6 +20,7 @@ interface BookListItemProps {
 export function BookListItem({
   bookId,
   title,
+  authorId,
   authorName,
   categoryId,
   categoryName,
@@ -51,17 +53,17 @@ export function BookListItem({
       {/* Text Details */}
       <div className='flex flex-1 flex-col gap-1'>
         {/* Category Badge */}
-        {categoryId != null ? (
+        {categoryId == null ? (
+          <span className='border-border text-foreground w-fit rounded-md border px-2 text-sm leading-7 font-bold tracking-[-0.02em]'>
+            {categoryName}
+          </span>
+        ) : (
           <Link
             href={`${paths.public.books}?category=${categoryId}`}
             className='border-border text-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 w-fit rounded-md border px-2 text-sm leading-7 font-bold tracking-[-0.02em] transition-colors'
           >
             {categoryName}
           </Link>
-        ) : (
-          <span className='border-border text-foreground w-fit rounded-md border px-2 text-sm leading-7 font-bold tracking-[-0.02em]'>
-            {categoryName}
-          </span>
         )}
 
         {/* Book Name */}
@@ -76,14 +78,26 @@ export function BookListItem({
         </Link>
 
         {/* Author Name */}
-        <span
-          className={cn(
-            'text-muted-foreground line-clamp-1 font-medium tracking-[-0.03em]',
-            'md:text-md text-sm leading-7 md:leading-7.5'
-          )}
-        >
-          {authorName}
-        </span>
+        {authorId ? (
+          <Link
+            href={`${paths.public.authors}/${authorId}`}
+            className={cn(
+              'text-muted-foreground hover:text-primary line-clamp-1 w-fit font-medium tracking-[-0.03em] transition-colors',
+              'md:text-md text-sm leading-7 md:leading-7.5'
+            )}
+          >
+            {authorName}
+          </Link>
+        ) : (
+          <span
+            className={cn(
+              'text-muted-foreground line-clamp-1 font-medium tracking-[-0.03em]',
+              'md:text-md text-sm leading-7 md:leading-7.5'
+            )}
+          >
+            {authorName}
+          </span>
+        )}
       </div>
     </div>
   );
